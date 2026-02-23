@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced ELT Materials Quiz</title>
+    <style>
+        :root { --teal: #008080; --orange: #ff8c00; --red: #b22222; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 40px; }
+        #quiz-container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 700px; width: 100%; border-top: 8px solid var(--teal); }
+        .level-badge { background: var(--teal); color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        h2 { color: #333; margin-top: 10px; }
+        .question { font-size: 1.2em; margin-bottom: 25px; color: #444; line-height: 1.5; }
+        .options { list-style: none; padding: 0; }
+        .options li { background: #f9f9f9; border: 2px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .options li:hover { border-color: var(--orange); background: #fffdfa; }
+        .options li.selected { border-color: var(--orange); background: #fff4e6; font-weight: bold; }
+        button { background: var(--orange); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; width: 100%; font-weight: bold; margin-top: 20px; }
+        button:hover { background: #e07b00; }
+        #feedback { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; }
+        .correct { background: #e6ffed; color: #22863a; border: 1px solid #22863a; }
+        .incorrect { background: #ffeef0; color: var(--red); border: 1px solid var(--red); }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="level-indicator" class="level-badge">Level 1: Practical Feasibility</div>
+    <div id="quiz-ui">
+        <div id="question-text" class="question"></div>
+        <ul id="options-list" class="options"></ul>
+        <div id="feedback"></div>
+        <button id="action-btn" onclick="handleAction()">Submit Answer</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        // LEVEL 1: FEASIBILITY & RURAL CONTEXT
+        {
+            level: "Level 1: Practical Feasibility",
+            q: "In a rural Indonesian school with frequent blackouts, what is the most 'democratic' and reliable material choice?",
+            a: ["Virtual Reality simulations", "Print-based worksheets", "Streaming YouTube videos"],
+            correct: 1,
+            info: "Print is democratic! It works without electricity or Wi-Fi, ensuring all 40 students have access."
+        },
+        {
+            level: "Level 1: Practical Feasibility",
+            q: "Effective materials for the Indonesian context must be designed to work with what typical class size?",
+            a: ["10-15 students", "Personalized 1-on-1 tutoring", "Large classes of 30-40 students"],
+            correct: 2,
+            info: "National standards often involve 30-40 students, meaning materials must be visible and manageable for large groups."
+        },
+        // LEVEL 2: ADVANCED SELECTION (SMP/SMA)
+        {
+            level: "Level 2: Advanced Selection",
+            q: "Which text types are specifically recommended for Senior High School (SMA) to build critical thinking?",
+            a: ["Simple nursery rhymes", "Analytical exposition and academic texts", "Basic greetings and colors"],
+            correct: 1,
+            info: "SMA learners need diverse genres like analytical exposition to prepare for university and research."
+        },
+        {
+            level: "Level 2: Advanced Selection",
+            q: "For Junior High (SMP), topics should transition from family/animals to what theme?",
+            a: ["Adolescent-relevant (hobbies, technology, future careers)", "Purely abstract linguistic theory", "Kindergarten storytelling"],
+            correct: 0,
+            info: "SMP materials should mirror the students' growth into adolescence and interest in the digital world."
+        }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let isAnswered = false;
+
+    function loadQuestion() {
+        isAnswered = false;
+        const data = quizData[currentQ];
+        document.getElementById("level-indicator").innerText = data.level;
+        document.getElementById("question-text").innerText = data.q;
+        document.getElementById("feedback").style.display = "none";
+        document.getElementById("action-btn").innerText = "Submit Answer";
+        
+        const oList = document.getElementById("options-list");
+        oList.innerHTML = "";
+        data.a.forEach((opt, i) => {
+            const li = document.createElement("li");
+            li.innerText = opt;
+            li.onclick = () => selectOption(li, i);
+            oList.appendChild(li);
+        });
+    }
+
+    let selectedIdx = -1;
+    function selectOption(el, idx) {
+        if(isAnswered) return;
+        document.querySelectorAll('.options li').forEach(li => li.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedIdx = idx;
+    }
+
+    function handleAction() {
+        if (!isAnswered) {
+            if (selectedIdx === -1) return alert("Select an option!");
+            checkAnswer();
+        } else {
+            currentQ++;
+            if (currentQ < quizData.length) {
+                selectedIdx = -1;
+                loadQuestion();
+            } else {
+                showFinalResults();
+            }
+        }
+    }
+
+    function checkAnswer() {
+        isAnswered = true;
+        const feedback = document.getElementById("feedback");
+        feedback.style.display = "block";
+        const correct = quizData[currentQ].correct;
+        
+        if (selectedIdx === correct) {
+            score++;
+            feedback.className = "correct";
+            feedback.innerText = "Correct! " + quizData[currentQ].info;
+        } else {
+            feedback.className = "incorrect";
+            feedback.innerText = "Incorrect. " + quizData[currentQ].info;
+        }
+        document.getElementById("action-btn").innerText = "Next Question";
+    }
+
+    function showFinalResults() {
+        const container = document.getElementById("quiz-ui");
+        container.innerHTML = `<h3>Quiz Complete!</h3><p style='font-size:1.5em'>Your Score: ${score}/${quizData.length}</p>
+        <p>You are now ready to select materials for the diverse Indonesian EFL landscape!</p>
+        <button onclick="location.reload()">Restart Quiz</button>`;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
