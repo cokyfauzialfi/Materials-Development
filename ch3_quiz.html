@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials Adaptation Quiz Pack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-button.active { 
+            border-bottom: 3px solid #0d9488; /* Teal-600 */
+            color: #0d9488;
+            font-weight: bold;
+        }
+        .correct-answer { color: #059669; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 uppercase tracking-wide">Materials Adaptation Quiz Pack</h1>
+            <p class="text-gray-600 mt-2">Professional Development Series for Indonesian ELT</p>
+        </header>
+
+        <!-- Horizontal Tab Menu -->
+        <div class="bg-white rounded-t-lg shadow-sm border-b">
+            <nav class="flex justify-around">
+                <button onclick="openTab(event, 'part1')" class="tab-button active py-4 px-6 text-gray-500 hover:text-teal-600 transition-all">Part 1: Foundations</button>
+                <button onclick="openTab(event, 'part2')" class="tab-button py-4 px-6 text-gray-500 hover:text-teal-600 transition-all">Part 2: Techniques</button>
+                <button onclick="openTab(event, 'part3')" class="tab-button py-4 px-6 text-gray-500 hover:text-teal-600 transition-all">Part 3: Scenario</button>
+            </nav>
+        </div>
+
+        <!-- Quiz Content Container -->
+        <div class="bg-white p-8 rounded-b-lg shadow-md mb-6">
+            
+            <!-- Part 1: Multiple Choice -->
+            <div id="part1" class="tab-content active space-y-6">
+                <h2 class="text-xl font-semibold text-teal-700 border-b pb-2">Multiple Choice Quiz</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-medium">1. According to McGrath (2016), why is adaptation generally more "time-efficient" than material development?</p>
+                        <div class="mt-2 space-y-2 ml-4">
+                            <label class="block"><input type="radio" name="q1" value="A"> A) It requires no professional design skills.</label>
+                            <label class="block"><input type="radio" name="q1" value="B"> B) It works with existing materials rather than creating from scratch.</label>
+                            <label class="block"><input type="radio" name="q1" value="C"> C) It ignores learner proficiency levels.</label>
+                            <label class="block"><input type="radio" name="q1" value="D"> D) It relies solely on digital tools.</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="font-medium">2. Which core characteristic describes a teacher's role as an "active curriculum decision-maker"?</p>
+                        <div class="mt-2 space-y-2 ml-4">
+                            <label class="block"><input type="radio" name="q2" value="A"> A) Contextual Responsiveness</label>
+                            <label class="block"><input type="radio" name="q2" value="B"> B) Teacher Agency</label>
+                            <label class="block"><input type="radio" name="q2" value="C"> C) Modification over Creation</label>
+                            <label class="block"><input type="radio" name="q2" value="D"> D) Enhancement of Suitability</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="font-medium">3. In the Indonesian context, why might a teacher need to adapt a unit about "Thanksgiving"?</p>
+                        <div class="mt-2 space-y-2 ml-4">
+                            <label class="block"><input type="radio" name="q3" value="A"> A) To address linguistic complexity.</label>
+                            <label class="block"><input type="radio" name="q3" value="B"> B) To address institutional budget constraints.</label>
+                            <label class="block"><input type="radio" name="q3" value="C"> C) To address cultural appropriateness and relevance.</label>
+                            <label class="block"><input type="radio" name="q3" value="D"> D) To align with national exam formats.</label>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="toggleKey('key1')" class="mt-4 bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition">Check Answers</button>
+                <div id="key1" class="hidden mt-4 p-4 bg-teal-50 rounded border border-teal-200">
+                    <p><strong>Correct Answers:</strong> 1-B, 2-B, 3-C</p>
+                </div>
+            </div>
+
+            <!-- Part 2: Match the Technique -->
+            <div id="part2" class="tab-content space-y-6">
+                <h2 class="text-xl font-semibold text-teal-700 border-b pb-2">"Match the Technique" Challenge</h2>
+                <p class="text-sm italic text-gray-600">Identify: Reduction, Addition, Modification, Simplification, or Reorganization</p>
+                
+                <div class="space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 rounded">
+                        <span class="md:w-3/4"><strong>A.</strong> Changing a dialogue about "The New York Subway" to "The TransJakarta Busway."</span>
+                        <input type="text" placeholder="Your Answer" class="mt-2 md:mt-0 p-1 border rounded w-full md:w-1/4">
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 rounded">
+                        <span class="md:w-3/4"><strong>B.</strong> Removing a reading passage about "Wine Tasting" in a conservative school.</span>
+                        <input type="text" placeholder="Your Answer" class="mt-2 md:mt-0 p-1 border rounded w-full md:w-1/4">
+                    </div>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-gray-50 rounded">
+                        <span class="md:w-3/4"><strong>C.</strong> Breaking a 30-word complex sentence into three shorter, 10-word sentences.</span>
+                        <input type="text" placeholder="Your Answer" class="mt-2 md:mt-0 p-1 border rounded w-full md:w-1/4">
+                    </div>
+                </div>
+                <button onclick="toggleKey('key2')" class="mt-4 bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition">Show Key</button>
+                <div id="key2" class="hidden mt-4 p-4 bg-teal-50 rounded border border-teal-200">
+                    <p><strong>Key:</strong> A: Modification, B: Reduction, C: Simplification</p>
+                </div>
+            </div>
+
+            <!-- Part 3: Scenario Application -->
+            <div id="part3" class="tab-content space-y-6">
+                <h2 class="text-xl font-semibold text-teal-700 border-b pb-2">Scenario-Based Application</h2>
+                <div class="bg-orange-50 p-4 border-l-4 border-orange-400">
+                    <p class="text-sm font-bold text-orange-800">SCENARIO:</p>
+                    <p class="text-gray-700">You are teaching in a rural area. The textbook requires a "YouTube video and blog comments." Your school has no internet and limited smartphones.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-medium">1. Phase 1 (Analysis): Identify the mismatch.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded h-20" placeholder="Type your analysis here..."></textarea>
+                    </div>
+                    <div>
+                        <p class="font-medium">2. Phase 2 (Planning): Plan your solution.</p>
+                        <textarea class="w-full mt-2 p-2 border rounded h-20" placeholder="Describe your plan..."></textarea>
+                    </div>
+                </div>
+                <button onclick="toggleKey('key3')" class="mt-4 bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition">Show Sample Response</button>
+                <div id="key3" class="hidden mt-4 p-4 bg-teal-50 rounded border border-teal-200 text-sm">
+                    <p><strong>Sample Response:</strong></p>
+                    <ul class="list-disc ml-5 mt-2 space-y-1">
+                        <li><strong>Analysis:</strong> Practical feasibility mismatch (infrastructure).</li>
+                        <li><strong>Plan:</strong> Modification. Convert video to a live roleplay and blog to a paper gallery walk.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="text-center text-gray-500 text-xs">
+            &copy; 2026 English Language Teaching Materials Development | Materials Adaptation Quiz
+        </footer>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            
+            // Hide keys when switching tabs
+            document.getElementById('key1').classList.add('hidden');
+            document.getElementById('key2').classList.add('hidden');
+            document.getElementById('key3').classList.add('hidden');
+        }
+
+        function toggleKey(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
