@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELT Materials Dev: Knowledge Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .game-card { transition: all 0.3s ease; border: 2px solid transparent; }
+        .game-card:hover { border-color: #0d9488; transform: scale(1.02); }
+        .active-tab { border-bottom: 4px solid #0d9488; color: #0d9488; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="flex items-center gap-4 mb-8">
+            <div class="bg-teal-600 text-white p-3 rounded-xl shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-900 uppercase">Materials Development Games</h1>
+                <p class="text-slate-500">Interactive Knowledge Lab for Professional Teachers</p>
+            </div>
+        </div>
+
+        <!-- Horizontal Tab Menu -->
+        <div class="flex border-b border-slate-200 mb-8 overflow-x-auto whitespace-nowrap bg-white rounded-t-xl sticky top-0 z-10 shadow-sm">
+            <button onclick="showTab('game1')" id="btn-game1" class="tab-btn px-6 py-4 text-slate-600 hover:text-teal-600 transition-all active-tab">1. Adaptation Auction</button>
+            <button onclick="showTab('game2')" id="btn-game2" class="tab-btn px-6 py-4 text-slate-600 hover:text-teal-600 transition-all">2. Ethical Minefield</button>
+            <button onclick="showTab('game3')" id="btn-game3" class="tab-btn px-6 py-4 text-slate-600 hover:text-teal-600 transition-all">3. Four Strands Factory</button>
+            <button onclick="showTab('game4')" id="btn-game4" class="tab-btn px-6 py-4 text-slate-600 hover:text-teal-600 transition-all">4. Merdeka Simulation</button>
+        </div>
+
+        <!-- GAME 1: ADAPTATION AUCTION -->
+        <div id="game1" class="tab-content active space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-teal-700 mb-2">The Adaptation Auction</h2>
+                <p class="text-slate-600 mb-6 italic">Strategy: Bid points on the best adaptation technique for specific classroom mismatches.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-amber-50 p-6 rounded-lg border-2 border-dashed border-amber-200">
+                        <h3 class="font-bold text-amber-800 flex items-center gap-2 mb-3">
+                            <span class="bg-amber-200 p-1 rounded">ITEM #042</span> SCENARIO FOR AUCTION
+                        </h3>
+                        <p class="text-lg leading-relaxed">"A textbook unit on <strong>'Ordering Wine at a French Bistro'</strong> is scheduled for a Junior High School in a strictly conservative rural district."</p>
+                        <div class="mt-4 flex gap-2">
+                            <span class="px-3 py-1 bg-white border border-amber-300 rounded-full text-xs font-semibold">CULTURAL MISMATCH</span>
+                            <span class="px-3 py-1 bg-white border border-amber-300 rounded-full text-xs font-semibold">GRADE 7</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-700">Submit Your Bid (Proposal):</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="selectBid(this)" class="p-3 text-left border rounded hover:bg-teal-50 hover:border-teal-500 transition"><strong>Option A:</strong> REDUCTION (Remove the text entirely and move to next unit).</button>
+                            <button onclick="selectBid(this)" class="p-3 text-left border rounded hover:bg-teal-50 hover:border-teal-500 transition"><strong>Option B:</strong> MODIFICATION (Change 'Wine' to 'Fruit Juice' and 'Bistro' to 'Warung').</button>
+                            <button onclick="selectBid(this)" class="p-3 text-left border rounded hover:bg-teal-50 hover:border-teal-500 transition"><strong>Option C:</strong> ADDITION (Keep text but add a page of warnings about health).</button>
+                        </div>
+                        <div id="auction-feedback" class="hidden p-4 bg-teal-100 text-teal-800 rounded-lg text-sm">
+                            <strong>Prof Dian's Verdict:</strong> Option B is the winner! This maintains the language function (ordering in a restaurant) while ensuring <strong>Cultural Appropriateness</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME 2: ETHICAL MINEFIELD -->
+        <div id="game2" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-rose-700 mb-2">The Ethical Minefield</h2>
+                <p class="text-slate-600 mb-6 italic">Navigate dilemmas involving Copyright, Bias, and Transparency.</p>
+                
+                <div class="flex flex-col items-center justify-center py-10 bg-slate-900 rounded-xl text-white relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                    
+                    <div id="dilemma-card" class="z-10 text-center max-w-lg px-6">
+                        <div class="text-rose-400 text-xs font-bold uppercase tracking-widest mb-2">System Alert: Ethical Dilemma</div>
+                        <p id="dilemma-text" class="text-xl font-medium mb-6 italic">"Click the button below to draw an ethical dilemma card from the minefield..."</p>
+                        <button onclick="drawDilemma()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform active:scale-95">
+                            Draw Dilemma Card
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="dilemma-analysis" class="hidden mt-6 p-6 bg-white border-2 border-rose-100 rounded-xl">
+                    <h3 class="font-bold text-rose-800 mb-2">How to clear the mine:</h3>
+                    <p id="dilemma-answer" class="text-slate-700"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME 3: FOUR STRANDS FACTORY -->
+        <div id="game3" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-2">Four Strands Factory</h2>
+                <p class="text-slate-600 mb-6 italic">Build a balanced lesson plan using Nation’s (2013) framework.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    <!-- Strand Slots -->
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                        <div class="text-indigo-600 font-bold text-xs uppercase mb-2">Input</div>
+                        <div id="slot-input" class="h-24 flex items-center justify-center border-2 border-dashed border-indigo-200 rounded-lg text-xs text-indigo-300 italic">Drop activity here</div>
+                    </div>
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                        <div class="text-indigo-600 font-bold text-xs uppercase mb-2">Output</div>
+                        <div id="slot-output" class="h-24 flex items-center justify-center border-2 border-dashed border-indigo-200 rounded-lg text-xs text-indigo-300 italic">Drop activity here</div>
+                    </div>
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                        <div class="text-indigo-600 font-bold text-xs uppercase mb-2">Language Focus</div>
+                        <div id="slot-focus" class="h-24 flex items-center justify-center border-2 border-dashed border-indigo-200 rounded-lg text-xs text-indigo-300 italic">Drop activity here</div>
+                    </div>
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                        <div class="text-indigo-600 font-bold text-xs uppercase mb-2">Fluency</div>
+                        <div id="slot-fluency" class="h-24 flex items-center justify-center border-2 border-dashed border-indigo-200 rounded-lg text-xs text-indigo-300 italic">Drop activity here</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-slate-50 rounded-xl">
+                    <h3 class="font-bold mb-4">Production Line (Click to Assign):</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="assignStrand('slot-input', 'Reading Graded Readers')" class="bg-white border p-2 rounded text-sm hover:shadow">Reading Graded Readers</button>
+                        <button onclick="assignStrand('slot-output', 'Class Role-play')" class="bg-white border p-2 rounded text-sm hover:shadow">Class Role-play</button>
+                        <button onclick="assignStrand('slot-focus', 'Grammar Noticing Task')" class="bg-white border p-2 rounded text-sm hover:shadow">Grammar Noticing Task</button>
+                        <button onclick="assignStrand('slot-fluency', '4-3-2 Speaking')" class="bg-white border p-2 rounded text-sm hover:shadow">4-3-2 Speaking</button>
+                    </div>
+                    <button onclick="checkFactory()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">Check Balance (Nation's Cycle)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME 4: MERDEKA SIMULATION -->
+        <div id="game4" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-orange-700 mb-2">Kurikulum Merdeka Simulation</h2>
+                <p class="text-slate-600 mb-6 italic">Walk through the 5-Phase Systematic Adaptation Cycle.</p>
+
+                <div class="relative">
+                    <div class="absolute left-8 top-0 bottom-0 w-1 bg-orange-100"></div>
+                    
+                    <div class="space-y-8 relative">
+                        <!-- Phase 1 -->
+                        <div class="flex items-start gap-4">
+                            <div class="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold z-10 shrink-0 shadow-md">1</div>
+                            <div class="bg-orange-50 p-4 rounded-lg w-full">
+                                <h4 class="font-bold text-orange-800">Phase 1: Analysis</h4>
+                                <p class="text-sm text-slate-700 mt-1">Identify mismatch: <em>"The book requires YouTube, but there is no internet."</em></p>
+                            </div>
+                        </div>
+
+                        <!-- Phase 2 -->
+                        <div class="flex items-start gap-4">
+                            <div class="bg-orange-400 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold z-10 shrink-0">2</div>
+                            <div class="bg-orange-50 p-4 rounded-lg w-full">
+                                <h4 class="font-bold text-orange-800">Phase 2: Planning</h4>
+                                <select class="w-full mt-2 p-2 border rounded text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                                    <option>Select Strategy...</option>
+                                    <option>Modification: Replace video with a live Role-play</option>
+                                    <option>Reduction: Skip the activity entirely</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Phase 3-5 Placeholder -->
+                        <div class="flex items-center justify-center py-4 ml-12 border-2 border-dashed border-orange-200 rounded-xl text-orange-400 font-medium">
+                            Continue to Development, Piloting, and Reflection...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Credits -->
+        <footer class="mt-12 text-center text-slate-400 text-xs">
+            <p>Built for the ELT Curriculum & Materials Development Course</p>
+            <p class="mt-1">&copy; 2024 English Language Teaching Materials Development</p>
+        </footer>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active-tab');
+        }
+
+        function selectBid(btn) {
+            document.getElementById('auction-feedback').classList.remove('hidden');
+            // Reset colors
+            btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('bg-teal-50', 'border-teal-500'));
+            // Set active
+            btn.classList.add('bg-teal-50', 'border-teal-500');
+        }
+
+        const dilemmas = [
+            {
+                q: "You want to use a news article from the Jakarta Post, but the school doesn't have a subscription. You decide to copy-paste the whole text into a handout.",
+                a: "Mine Cleared! This is generally acceptable for 'Fair Use' in education, but ethical practice requires proper ATTRIBUTION and avoiding wholesale copying if commercial versions are available specifically for schools."
+            },
+            {
+                q: "A textbook shows a picture of a family where only the father is working and the mother is cooking. You notice this gender bias.",
+                a: "Mine Cleared! Use AVOIDING BIAS principles. Supplement the material with images of women in professional roles to provide a balanced social perspective."
+            },
+            {
+                q: "You are teaching a rural class about 'Winter in London'. No student has ever seen snow.",
+                a: "Mine Cleared! Apply SCHEMA THEORY. Activate prior knowledge by comparing it to the 'Rainy Season' in Indonesia or use local analogies to make the input comprehensible."
+            }
+        ];
+
+        function drawDilemma() {
+            const random = dilemmas[Math.floor(Math.random() * dilemmas.length)];
+            document.getElementById('dilemma-text').innerText = random.q;
+            document.getElementById('dilemma-answer').innerText = random.a;
+            document.getElementById('dilemma-analysis').classList.remove('hidden');
+        }
+
+        function assignStrand(id, value) {
+            const el = document.getElementById(id);
+            el.innerText = value;
+            el.classList.remove('text-indigo-300', 'italic');
+            el.classList.add('text-indigo-800', 'font-bold', 'bg-white');
+        }
+
+        function checkFactory() {
+            const slots = ['slot-input', 'slot-output', 'slot-focus', 'slot-fluency'];
+            const allFilled = slots.every(s => !document.getElementById(s).innerText.includes('Drop'));
+            
+            if (allFilled) {
+                alert("Perfect Balance! You have successfully implemented Nation's Four Strands. The lesson is pedagogically sound.");
+            } else {
+                alert("Mismatch Alert! Your factory line is missing strands. A balanced course needs equal opportunities for all 4 areas.");
+            }
+        }
+    </script>
+</body>
+</html>
