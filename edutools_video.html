@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Tools for Indonesian Classrooms</title>
+    <style>
+        :root {
+            --primary: #008080; /* Teal */
+            --secondary: #ff8c00; /* Orange */
+            --accent: #cd5c5c; /* Muted Red */
+            --bg: #f4f7f6;
+            --sidebar-bg: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .tab-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .tab-link {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .tab-link:hover {
+            background-color: #f0fdfa;
+            color: var(--primary);
+        }
+
+        .tab-link.active {
+            background-color: #e6fcf5;
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+            font-weight: 700;
+        }
+
+        .category-label {
+            padding: 20px 20px 8px 20px;
+            font-size: 0.7rem;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Area */
+        .main-content {
+            flex: 1;
+            padding: 60px 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-pane {
+            display: none;
+            width: 100%;
+            max-width: 700px;
+            animation: fadeIn 0.3s ease-out;
+            text-align: center;
+        }
+
+        .content-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tool-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .tool-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .description {
+            line-height: 1.8;
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        /* Call to Action Button */
+        .youtube-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FF0000; /* YouTube Red */
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .youtube-btn:hover {
+            background-color: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .youtube-btn svg {
+            margin-right: 10px;
+            fill: currentColor;
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: 200px; border-right: none; border-bottom: 1px solid #ddd; }
+            .main-content { padding: 40px 20px; }
+            .tool-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Digital Learning Tools</h2>
+        </div>
+        
+        <ul class="tab-menu">
+            <div class="category-label">Productivity</div>
+            <li class="tab-link active" onclick="openTab(event, 'tool1')">Google Workspace</li>
+            <li class="tab-link" onclick="openTab(event, 'tool2')">Microsoft 365</li>
+            <li class="tab-link" onclick="openTab(event, 'tool3')">Canva for Education</li>
+            
+            <div class="category-label">Engagement</div>
+            <li class="tab-link" onclick="openTab(event, 'tool4')">Quizizz</li>
+            <li class="tab-link" onclick="openTab(event, 'tool5')">Kahoot!</li>
+            <li class="tab-link" onclick="openTab(event, 'tool6')">Mentimeter</li>
+            <li class="tab-link" onclick="openTab(event, 'tool7')">Wordwall</li>
+            <li class="tab-link" onclick="openTab(event, 'tool8')">Padlet</li>
+            
+            <div class="category-label">Creative Media</div>
+            <li class="tab-link" onclick="openTab(event, 'tool9')">CapCut</li>
+            <li class="tab-link" onclick="openTab(event, 'tool10')">Audacity</li>
+            <li class="tab-link" onclick="openTab(event, 'tool11')">Genially</li>
+            <li class="tab-link" onclick="openTab(event, 'tool12')">Adobe Express</li>
+            
+            <div class="category-label">LMS & Admin</div>
+            <li class="tab-link" onclick="openTab(event, 'tool13')">Google Classroom</li>
+            <li class="tab-link" onclick="openTab(event, 'tool14')">Platform Merdeka Mengajar</li>
+            <li class="tab-link" onclick="openTab(event, 'tool15')">Moodle</li>
+            
+            <div class="category-label">Infrastructure</div>
+            <li class="tab-link" onclick="openTab(event, 'tool16')">Kolibri</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <!-- Reusable Content Structure (No Embeds) -->
+        <div id="tool1" class="content-pane active">
+            <span class="tool-icon">📁</span>
+            <h1 class="tool-title">Google Workspace for Education</h1>
+            <p class="description">Access a powerful suite of collaborative tools including Google Docs, Drive, and Meet, specifically optimized for educational environments using the <i>belajar.id</i> ecosystem.</p>
+            <a href="https://www.youtube.com/playlist?list=PLU8ezI8GYqs6a__2ffS5LZHcAYvxukGkN" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool2" class="content-pane">
+            <span class="tool-icon">💻</span>
+            <h1 class="tool-title">Microsoft 365 Education</h1>
+            <p class="description">Utilize enterprise-grade productivity tools with specialized Learning Accelerators designed to support literacy, numeracy, and social-emotional learning.</p>
+            <a href="https://www.youtube.com/playlist?list=PLiluTszfwwMIwwwrGTM89svTtz6vYvk0n" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool3" class="content-pane">
+            <span class="tool-icon">🎨</span>
+            <h1 class="tool-title">Canva for Education</h1>
+            <p class="description">Create stunning visual designs and presentations. Teachers in Indonesia can unlock premium features for free using their <i>belajar.id</i> accounts.</p>
+            <a href="https://www.youtube.com/playlist?list=PLATYfhN6gQz_xQMZOkVYm_UYIHCPtilyj" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool4" class="content-pane">
+            <span class="tool-icon">⚡</span>
+            <h1 class="tool-title">Quizizz</h1>
+            <p class="description">Engage students with gamified assessments. Explore the "Paper Mode" feature, ideal for classrooms with limited internet or device access.</p>
+            <a href="https://www.youtube.com/playlist?list=PLlrFn9RR_0qCioWq7JQ7Rl02Tyr0pUx5G" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool5" class="content-pane">
+            <span class="tool-icon">🎮</span>
+            <h1 class="tool-title">Kahoot!</h1>
+            <p class="description">Turn your lessons into high-energy learning games. Perfect for quick reviews, icebreakers, and competitive classroom activities.</p>
+            <a href="https://www.youtube.com/playlist?list=PLVpm5New2Rw-StW-dFikh3BEVx78CSPyR" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool6" class="content-pane">
+            <span class="tool-icon">📊</span>
+            <h1 class="tool-title">Mentimeter</h1>
+            <p class="description">Gather real-time feedback through live polls and word clouds. An excellent tool for increasing student voice and formative assessment.</p>
+            <a href="https://www.youtube.com/playlist?list=PLsFGssspaTWejwRJu6O8uU90w9eP_Q1ql" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool7" class="content-pane">
+            <span class="tool-icon">🧩</span>
+            <h1 class="tool-title">Wordwall</h1>
+            <p class="description">Transform boring exercises into interactive digital games. Provides templates for everything from matching pairs to arcade-style quizzes.</p>
+            <a href="https://www.youtube.com/playlist?list=PLah84L8_JOEwVzkeIfntjK9i0Je9QN72d" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool8" class="content-pane">
+            <span class="tool-icon">📌</span>
+            <h1 class="tool-title">Padlet</h1>
+            <p class="description">A digital bulletin board that allows students to collaborate by posting notes, images, and videos in a shared online space.</p>
+            <a href="https://www.youtube.com/playlist?list=PL5hbXqucLc-DbBR9_1dG1BozvskAzSof8" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool9" class="content-pane">
+            <span class="tool-icon">🎬</span>
+            <h1 class="tool-title">CapCut</h1>
+            <p class="description">Master mobile-first video editing. A highly popular tool among students for creating creative project reports and learning videos.</p>
+            <a href="https://www.youtube.com/playlist?list=PLOoBULnQlnENgzrljQZ70KUd8gr3CXdE7" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool10" class="content-pane">
+            <span class="tool-icon">🎙️</span>
+            <h1 class="tool-title">Audacity</h1>
+            <p class="description">Learn professional audio editing for podcasting or language listening materials. This open-source tool is essential for audio projects.</p>
+            <a href="https://www.youtube.com/playlist?list=PLt__f9D3T90yZiTOE1QOAF2Uc1MPAK_fv" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool11" class="content-pane">
+            <span class="tool-icon">✨</span>
+            <h1 class="tool-title">Genially</h1>
+            <p class="description">Go beyond static slides with interactive content. Create gamified learning modules, interactive infographics, and virtual escape rooms.</p>
+            <a href="https://www.youtube.com/playlist?list=PLIe0e5ZRrHGXE8KiiJFXtI_y456i68YQI" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool12" class="content-pane">
+            <span class="tool-icon">🚀</span>
+            <h1 class="tool-title">Adobe Express</h1>
+            <p class="description">Create professional flyers, graphics, and short videos in minutes using AI-powered templates tailored for education.</p>
+            <a href="https://www.youtube.com/playlist?list=PLqxJbfyK9yZdzZlSiGX0TDoMucIjV322h" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool13" class="content-pane">
+            <span class="tool-icon">🏫</span>
+            <h1 class="tool-title">Google Classroom</h1>
+            <p class="description">The standard management tool for paperless classrooms. Organize assignments, provide feedback, and communicate effectively with students.</p>
+            <a href="https://www.youtube.com/playlist?list=PLP7Bvyb3ap44G3Gt_mTxOHoCcIYTBIixg" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool14" class="content-pane">
+            <span class="tool-icon">🇮🇩</span>
+            <h1 class="tool-title">Platform Merdeka Mengajar (PMM)</h1>
+            <p class="description">A crucial companion for Indonesian teachers navigating the <i>Kurikulum Merdeka</i>. Access teaching modules and training directly from the Ministry.</p>
+            <a href="https://www.youtube.com/playlist?list=PL6nNxrzL_jfgijfaqTBnvlM0-h88fLPze" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool15" class="content-pane">
+            <span class="tool-icon">📐</span>
+            <h1 class="tool-title">Moodle</h1>
+            <p class="description">Explore the power of open-source learning management. Moodle offers unmatched flexibility for advanced blended learning structures.</p>
+            <a href="https://www.youtube.com/playlist?list=PLxcO_MFWQBDdtIset9OrJqpwV2gfWh3DY" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+
+        <div id="tool16" class="content-pane">
+            <span class="tool-icon">🛰️</span>
+            <h1 class="tool-title">Kolibri</h1>
+            <p class="description">Designed to bridge the digital divide. Kolibri brings high-quality educational resources to schools without internet connectivity.</p>
+            <a href="https://www.youtube.com/playlist?list=PLX0Z_Ov7KEfxOBsxyD4gfskllD0_U2A-g" target="_blank" class="youtube-btn">
+                <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                Watch Tutorial Series
+            </a>
+        </div>
+    </main>
+
+    <script>
+        function openTab(evt, toolId) {
+            // Hide all panes
+            const contentPanes = document.querySelectorAll(".content-pane");
+            contentPanes.forEach(pane => pane.classList.remove("active"));
+
+            // Remove active state from links
+            const tabLinks = document.querySelectorAll(".tab-link");
+            tabLinks.forEach(link => link.classList.remove("active"));
+
+            // Show active pane and link
+            const activePane = document.getElementById(toolId);
+            activePane.classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            // Reset scroll
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+    </script>
+</body>
+</html>
