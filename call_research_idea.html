@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALL Research Methodology Dashboard</title>
+    <style>
+        :root {
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --primary: #3b82f6;
+            --secondary: #6366f1;
+            --text-main: #f8fafc;
+            --content-bg: #ffffff;
+            --content-text: #334155;
+            --accent-bg: #eff6ff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--content-text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Vertical Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: #60a5fa;
+        }
+
+        .sidebar-header p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            background-color: var(--content-bg);
+            overflow-y: auto;
+            padding: 3rem;
+        }
+
+        .tab-panel {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography & Layout */
+        .header-title {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--accent-bg);
+            padding-bottom: 1rem;
+        }
+
+        .header-title h2 {
+            font-size: 2rem;
+            color: var(--sidebar-bg);
+            font-weight: 800;
+        }
+
+        .section-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .section-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .grid-item {
+            background-color: var(--accent-bg);
+            padding: 1.25rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .grid-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--sidebar-bg);
+        }
+
+        /* Lists and steps */
+        .steps {
+            list-style: none;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-num {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .pro-tip {
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            padding: 1rem;
+            border-radius: 8px;
+            color: #9a3412;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; }
+            .nav-menu { display: flex; overflow-x: auto; }
+            .nav-item { white-space: nowrap; border-left: none; border-bottom: 4px solid transparent; }
+            .nav-item.active { border-bottom-color: var(--primary); }
+            .main-content { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>Computer-Assisted Language Learning (CALL) Research</h1>
+            <p>Methodological Dashboard</p>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="showTab(0)">
+                <span>Literature Review</span>
+            </div>
+            <div class="nav-item" onclick="showTab(1)">
+                <span>Experimental Design</span>
+            </div>
+            <div class="nav-item" onclick="showTab(2)">
+                <span>Survey Research</span>
+            </div>
+            <div class="nav-item" onclick="showTab(3)">
+                <span>Qualitative & Case Study</span>
+            </div>
+            <div class="nav-item" onclick="showTab(4)">
+                <span>Ideal Practice</span>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <!-- Literature Review Tab -->
+        <div id="panel-0" class="tab-panel active">
+            <div class="header-title">
+                <h2>The Literature Review</h2>
+            </div>
+            <div class="section-card">
+                <h3>Theoretical Background</h3>
+                <p>A literature review is the foundational phase of any CALL research. It determines whether a question has been answered or if a hypothesis has been adoptable into theory.</p>
+                <div class="info-grid">
+                    <div class="grid-item">
+                        <strong>Synthesis as Data</strong>
+                        Summarizing studies that individually might not support a point of view to reveal broader patterns.
+                    </div>
+                    <div class="grid-item">
+                        <strong>The 'Why' Factor</strong>
+                        Understanding why different sites produce different results (e.g., changes in platforms, literacy, or programs).
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <h3>Anatomy of a Review Project</h3>
+                <ul class="steps">
+                    <li class="step-item">
+                        <div class="step-num">1</div>
+                        <div><strong>Narrowing the Theme:</strong> Identify information gaps that are worth studying but narrow enough to be manageable.</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">2</div>
+                        <div><strong>Understanding Perspectives:</strong> Aim to grasp a variety of viewpoints on a single CALL issue.</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">3</div>
+                        <div><strong>Determining Lacunae:</strong> Locate exactly where research is currently lacking.</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Experimental Design Tab -->
+        <div id="panel-1" class="tab-panel">
+            <div class="header-title">
+                <h2>Experimental Research</h2>
+            </div>
+            <div class="section-card">
+                <h3>Hypothesis Testing</h3>
+                <p>CALL experiments typically compare a new approach or platform against a "control" or standard method to measure efficacy.</p>
+                <div class="info-grid">
+                    <div class="grid-item">
+                        <strong>Independent Variable</strong>
+                        The specific tool or instruction method being changed (e.g., a specific mobile app).
+                    </div>
+                    <div class="grid-item">
+                        <strong>Dependent Variable</strong>
+                        The outcome being measured (e.g., vocabulary retention, fluency).
+                    </div>
+                </div>
+            </div>
+            <div class="pro-tip">
+                <strong>Crucial Note:</strong> The text highlights that "factors surrounding the research site" are often more important than the group results. Context is everything in CALL.
+            </div>
+        </div>
+
+        <!-- Survey Research Tab -->
+        <div id="panel-2" class="tab-panel">
+            <div class="header-title">
+                <h2>Survey & Descriptive Inquiry</h2>
+            </div>
+            <div class="section-card">
+                <h3>Capturing User Perception</h3>
+                <p>Surveys allow researchers to understand the learners' and teachers' experiences with technology, providing data on literacy, accessibility, and attitudes.</p>
+                <div class="info-grid">
+                    <div class="grid-item">
+                        <strong>Standardized Platforms</strong>
+                        Researching how uniform interfaces impact learning outcomes.
+                    </div>
+                    <div class="grid-item">
+                        <strong>Computer Literacy</strong>
+                        Assessing if learner proficiency with tools correlates with language success.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qualitative Tab -->
+        <div id="panel-3" class="tab-panel">
+            <div class="header-title">
+                <h2>Qualitative Methods</h2>
+            </div>
+            <div class="section-card">
+                <h3>Deep Contextual Analysis</h3>
+                <p>Focusing on individual narratives and descriptive case studies to uncover how language learning occurs in unobtrusive ways.</p>
+                <div class="section-card" style="background: #fafafa; border-style: dashed;">
+                    <strong>The 'Nell' Case Study (Sample)</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #64748b;">The text illustrates an ideal CALL scenario where a book (AI/Interactive) responds to a learner's name and curiosity. This qualitative "moment of learning" highlights the potential for personalized, adaptive education.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideal Practice Tab -->
+        <div id="panel-4" class="tab-panel">
+            <div class="header-title">
+                <h2>Ideal CALL Practice</h2>
+            </div>
+            <div class="section-card">
+                <h3>Reflection & Publication</h3>
+                <p>As teachers and researchers, the noble pursuit involves reflecting on best practices and sharing them through publication.</p>
+                <ul class="steps">
+                    <li class="step-item">
+                        <div class="step-num">★</div>
+                        <div><strong>Unobtrusive:</strong> Technology should feel natural, not like a barrier to learning.</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">★</div>
+                        <div><strong>Effective:</strong> It must serve the learning goals identified in the literature.</div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">★</div>
+                        <div><strong>Enjoyable:</strong> The learner's engagement is paramount.</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="pro-tip">
+                "Sharing our practices with others through publication is both a noble and satisfying pursuit." — Section 10.1 conclusion.
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function showTab(index) {
+            // Hide all panels
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(p => p.classList.remove('active'));
+            
+            // Remove active state from nav
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(n => n.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(`panel-${index}`).classList.add('active');
+            navItems[index].classList.add('active');
+        }
+    </script>
+</body>
+</html>
