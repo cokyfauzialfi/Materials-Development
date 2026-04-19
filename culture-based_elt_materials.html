@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture-Based ELT Materials Interactive Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .table-container {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .row-hover:hover {
+            background-color: #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .tag-source { background-color: #ccfbf1; color: #0f766e; }
+        .tag-target { background-color: #ffedd5; color: #9a3412; }
+        .tag-objective { background-color: #fee2e2; color: #991b1b; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .animate-pop {
+            animation: pop 0.3s cubic-bezier(0.26, 0.53, 0.74, 1.48);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-slate-800 mb-2">Culture-Based ELT Materials</h1>
+            <p class="text-slate-500 max-w-2xl mx-auto">Integrating Source Culture (Indonesia) and Target Culture through Critical Pedagogy and Intercultural Communicative Competence (ICC).</p>
+        </header>
+
+        <!-- Interactive Table -->
+        <div class="table-container border border-slate-200">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800 text-white">
+                            <th class="p-4 uppercase text-xs font-bold tracking-wider border-r border-slate-700">Component</th>
+                            <th class="p-4 uppercase text-xs font-bold tracking-wider border-r border-slate-700">Activity Type</th>
+                            <th class="p-4 uppercase text-xs font-bold tracking-wider border-r border-slate-700">Source Culture (ID)</th>
+                            <th class="p-4 uppercase text-xs font-bold tracking-wider border-r border-slate-700">Target Culture</th>
+                            <th class="p-4 uppercase text-xs font-bold tracking-wider">ICC Objective</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-700">
+                        <!-- Row 1 -->
+                        <tr class="row-hover border-b border-slate-100 cursor-pointer" onclick="showDetails(0)">
+                            <td class="p-4 font-semibold text-slate-900"><i class="fa-solid fa-book-open mr-2 text-teal-600"></i>Reading Text</td>
+                            <td class="p-4 text-sm italic">Critical Reading & Comparison</td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-source">Biographies: Kartini/Hatta</span></td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-target">Western Global Icons</span></td>
+                            <td class="p-4 text-sm font-medium text-red-700">Analyzing Universal Virtues</td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr class="row-hover border-b border-slate-100 cursor-pointer" onclick="showDetails(1)">
+                            <td class="p-4 font-semibold text-slate-900"><i class="fa-solid fa-comments mr-2 text-orange-600"></i>Dialogue</td>
+                            <td class="p-4 text-sm italic">Pragmatic Role-Play</td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-source">"Mau ke mana?" Greeting</span></td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-target">Small Talk Conventions</span></td>
+                            <td class="p-4 text-sm font-medium text-red-700">Speech Act Awareness</td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr class="row-hover border-b border-slate-100 cursor-pointer" onclick="showDetails(2)">
+                            <td class="p-4 font-semibold text-slate-900"><i class="fa-solid fa-headphones mr-2 text-blue-600"></i>Listening</td>
+                            <td class="p-4 text-sm italic">Reflective Listening</td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-source">Subak / Ngayah Wisdom</span></td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-target">International Podcasts</span></td>
+                            <td class="p-4 text-sm font-medium text-red-700">Perspective Identification</td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr class="row-hover border-b border-slate-100 cursor-pointer" onclick="showDetails(3)">
+                            <td class="p-4 font-semibold text-slate-900"><i class="fa-solid fa-pen-nib mr-2 text-rose-600"></i>Writing</td>
+                            <td class="p-4 text-sm italic">Identity Writing</td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-source">Reflective Identity Essays</span></td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-target">Cross-Cultural Emails</span></td>
+                            <td class="p-4 text-sm font-medium text-red-700">Transgredience</td>
+                        </tr>
+                        <!-- Row 5 -->
+                        <tr class="row-hover cursor-pointer" onclick="showDetails(4)">
+                            <td class="p-4 font-semibold text-slate-900"><i class="fa-solid fa-diagram-project mr-2 text-indigo-600"></i>Project</td>
+                            <td class="p-4 text-sm italic">Intercultural Mediator</td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-source">Local Heritage Invest.</span></td>
+                            <td class="p-4 text-sm"><span class="px-2 py-1 rounded-full text-xs font-medium tag-target">Batik vs. Shibori Compare</span></td>
+                            <td class="p-4 text-sm font-medium text-red-700">Establishing "Third Place"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <footer class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-teal-50 p-4 rounded-lg border border-teal-100">
+                <h3 class="font-bold text-teal-800 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Substantive Depth</h3>
+                <p class="text-sm text-teal-700 italic">Moving beyond surface labels to teach underlying cultural values and histories (Widodo, 2017).</p>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                <h3 class="font-bold text-orange-800 mb-2"><i class="fa-solid fa-scale-balanced mr-2"></i>Glocal Balance</h3>
+                <p class="text-sm text-orange-700 italic">Using English to express local identity while respecting global diversity (McKay, 2004).</p>
+            </div>
+            <div class="bg-rose-50 p-4 rounded-lg border border-rose-100">
+                <h3 class="font-bold text-rose-800 mb-2"><i class="fa-solid fa-magnifying-glass mr-2"></i>Textual Criticism</h3>
+                <p class="text-sm text-rose-700 italic">Interrogating texts to uncover missing voices and ideological assumptions (Widodo, 2017).</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal for Detailed View -->
+    <div id="detailModal" class="modal flex items-center justify-center" onclick="closeModal(event)">
+        <div class="bg-white rounded-xl max-w-2xl w-full mx-4 overflow-hidden shadow-2xl animate-pop" onclick="event.stopPropagation()">
+            <div id="modalHeader" class="p-6 bg-slate-800 text-white flex justify-between items-center">
+                <h2 id="modalTitle" class="text-xl font-bold">Component Details</h2>
+                <button onclick="document.getElementById('detailModal').style.display='none'" class="text-white hover:text-slate-300">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Local Task</h4>
+                        <p id="localTask" class="text-slate-800 font-medium"></p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h4 class="text-xs uppercase font-bold text-slate-400 mb-2">Target/Global Task</h4>
+                        <p id="targetTask" class="text-slate-800 font-medium"></p>
+                    </div>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+                    <h4 class="text-xs uppercase font-bold text-red-400 mb-2">Learning Goal (ICC)</h4>
+                    <p id="iccGoal" class="text-red-900 font-semibold"></p>
+                </div>
+                <div class="text-slate-500 text-xs italic mt-4 border-t pt-4">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Tip: Use "What Virtues Are Emphasized?" as a primary critical question.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const contentData = [
+            {
+                title: "Reading Text",
+                local: "Analyze biographies of heroes (Kartini/Hatta). Ask: 'What virtues are emphasized?' and 'Whose voice is missing?'",
+                target: "Analyze biographies of global icons. Ask: 'How does this figure's values align or clash with local virtues?'",
+                icc: "Critically analyze universal moral values and their representation or omission in texts (Textual Criticism)."
+            },
+            {
+                title: "Dialogue",
+                local: "Scenario: A student greets a teacher. Task: Discuss why 'Where are you going?' is a social greeting, not an intrusion.",
+                target: "Scenario: Western 'Small Talk'. Task: Role-play weather conversations to build social rapport without personal intrusion.",
+                icc: "Developing Pragmatic Competence to avoid the 'Fluent Fool' syndrome in cross-cultural encounters."
+            },
+            {
+                title: "Listening",
+                local: "Listen to narratives on local wisdom (Subak/Ngayah). Focus on the concept of 'community balance'.",
+                target: "Podcasts on global issues (Climate Change). Focus on how international experts phrase global responsibilities.",
+                icc: "Identifying and respecting different cultural perspectives used to view shared global challenges."
+            },
+            {
+                title: "Writing",
+                local: "Reflective essays on one's own identity and the experience of expressing it in a foreign tongue.",
+                target: "Drafting emails to international peers that explain the cultural significance of local festivals.",
+                icc: "Building 'Transgredience'—the ability to see one's own culture from an external vantage point."
+            },
+            {
+                title: "Project",
+                local: "Investigate a local heritage item (Batik) and its social history (e.g., philosophical patterns).",
+                target: "Compare local crafts with international equivalents (e.g., Japanese Shibori) to find common ground.",
+                icc: "Establishing a 'Third Place'—a reflective discursive space where learners mediate cultures with confidence."
+            }
+        ];
+
+        function showDetails(index) {
+            const item = contentData[index];
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('localTask').innerText = item.local;
+            document.getElementById('targetTask').innerText = item.target;
+            document.getElementById('iccGoal').innerText = item.icc;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'detailModal') {
+                document.getElementById('detailModal').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
