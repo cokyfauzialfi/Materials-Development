@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IC Activities Dashboard | Indonesian ELT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .sidebar-item.active {
+            background-color: #ffffff;
+            color: #0d9488;
+            border-left: 4px solid #0d9488;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Vertical Sidebar -->
+        <aside class="w-full md:w-80 bg-slate-900 text-slate-300 p-6 flex flex-col">
+            <div class="mb-10">
+                <h1 class="text-white text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-earth-asia text-teal-400"></i>
+                    IC Dashboard
+                </h1>
+                <p class="text-xs text-slate-500 mt-1 uppercase tracking-widest font-semibold">Indonesian ELT Classroom</p>
+            </div>
+
+            <nav class="space-y-2 flex-grow">
+                <button onclick="showTab('roleplay')" class="sidebar-item w-full flex items-center gap-3 p-4 rounded-xl transition-all font-medium active" id="btn-roleplay">
+                    <i class="fa-solid fa-people-arrows w-5"></i>
+                    Role-Play
+                </button>
+                <button onclick="showTab('journal')" class="sidebar-item w-full flex items-center gap-3 p-4 rounded-xl transition-all font-medium" id="btn-journal">
+                    <i class="fa-solid fa-book-open w-5"></i>
+                    Reflection Journals
+                </button>
+                <button onclick="showTab('local')" class="sidebar-item w-full flex items-center gap-3 p-4 rounded-xl transition-all font-medium" id="btn-local">
+                    <i class="fa-solid fa-map-location-dot w-5"></i>
+                    Local Presentations
+                </button>
+                <button onclick="showTab('incident')" class="sidebar-item w-full flex items-center gap-3 p-4 rounded-xl transition-all font-medium" id="btn-incident">
+                    <i class="fa-solid fa-magnifying-glass-chart w-5"></i>
+                    Critical Incident
+                </button>
+            </nav>
+
+            <div class="mt-auto pt-6 border-t border-slate-800">
+                <div class="bg-slate-800 rounded-lg p-3 text-xs leading-relaxed italic">
+                    "Language and culture are fundamentally integrated." — Liddicoat (032)
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow p-6 md:p-12 overflow-y-auto">
+            
+            <!-- Tab: Role-Play -->
+            <div id="roleplay" class="tab-content active">
+                <div class="max-w-4xl mx-auto">
+                    <span class="text-teal-600 font-bold text-sm uppercase tracking-widest italic">Activity 1</span>
+                    <h2 class="text-4xl font-black text-slate-800 mt-2 mb-6 uppercase">The Cultural Mediator</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-10">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-teal-500"></i> Description
+                            </h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Students navigate a cultural mismatch between Indonesian and Australian norms. This activity focuses on the <strong>Mediator</strong> role, encouraging linguistic and intercultural bridge-building (Wang Ge, 2004).
+                            </p>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500"></i> Role: Host (Indo)</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500"></i> Role: Guest (AUS)</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500"></i> Role: Mediator</li>
+                            </ul>
+                        </div>
+                        <div class="video-container">
+                            <iframe src="https://drive.google.com/file/d/1bX7YfzZT_u2GJ3s3GnByYEboOkMlLLOM/preview" allow="autoplay"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Journal -->
+            <div id="journal" class="tab-content">
+                <div class="max-w-4xl mx-auto">
+                    <span class="text-indigo-600 font-bold text-sm uppercase tracking-widest italic">Activity 2</span>
+                    <h2 class="text-4xl font-black text-slate-800 mt-2 mb-6 uppercase">The Cultural Mirror</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-10">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-pen-nib text-indigo-500"></i> Reflection Mechanism
+                            </h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Using the ID Model (Houghton, 2013), students make their identity development visible. This helps bridge digital literacy with experiential learning pedagogy (Wibowo, 2024).
+                            </p>
+                            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                                <p class="text-sm text-indigo-800 italic font-medium">"How would you represent Indonesian teenagers differently to avoid stereotypes?"</p>
+                            </div>
+                        </div>
+                        <div class="video-container">
+                            <iframe src="https://drive.google.com/file/d/1yV42y5rHg8-9L3gFwalYBh5uQOXSWbPp/preview" allow="autoplay"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Local Presentations -->
+            <div id="local" class="tab-content">
+                <div class="max-w-4xl mx-auto">
+                    <span class="text-orange-600 font-bold text-sm uppercase tracking-widest italic">Activity 3</span>
+                    <h2 class="text-4xl font-black text-slate-800 mt-2 mb-6 uppercase">Glocal Voices</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-10">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-orange-500"></i> Empowering Local Wisdom
+                            </h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Students present local wisdom (e.g., Sago/Papeda culture from Maluku) to a global audience (Manuhutu, 2023). This builds confidence in being an "Intercultural Speaker" (Byram, 2020).
+                            </p>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase">Source Culture</span>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase">EIL Context</span>
+                            </div>
+                        </div>
+                        <div class="video-container">
+                            <iframe src="https://drive.google.com/file/d/1WBWg-abCQz04fguF8ILQeJX5_-8NhCdG/preview" allow="autoplay"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Critical Incident -->
+            <div id="incident" class="tab-content">
+                <div class="max-w-4xl mx-auto">
+                    <span class="text-rose-600 font-bold text-sm uppercase tracking-widest italic">Activity 4</span>
+                    <h2 class="text-4xl font-black text-slate-800 mt-2 mb-6 uppercase">Deconstructing the Bias</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-10">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-brain text-rose-500"></i> Critical Inquiry
+                            </h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Analysis of communication breakdowns using the 4-step framework (Noticing, Comparing, Reflecting, Integrating) to move into the "Third Place" (Liddicoat, 2008).
+                            </p>
+                            <p class="text-xs text-slate-400">Framework: Byram (1997) & Liddicoat (2008)</p>
+                        </div>
+                        <div class="video-container">
+                            <iframe src="https://drive.google.com/file/d/1RUDe4T1_M4ENAmm0AQcaoPOnZP0ouydB/preview" allow="autoplay"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activate button
+            document.getElementById('btn-' + tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
