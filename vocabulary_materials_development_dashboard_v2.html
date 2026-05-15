@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Materials Development Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.0/index.css" rel="stylesheet">
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+  .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .card { background: rgba(255,255,255,0.95); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: all 0.3s ease; }
+  .card:hover { box-shadow: 0 15px 40px rgba(0,0,0,0.2); transform: translateY(-2px); }
+  .tab-btn { padding: 12px 24px; border-radius: 8px 8px 0 0; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
+  .tab-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+  .tab-btn.inactive { background: rgba(255,255,255,0.7); color: #4a5568; }
+  .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.9); }
+  .input-field { width: 100%; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 6px; transition: border-color 0.3s; }
+  .input-field:focus { border-color: #667eea; outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+  .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+  .btn-primary:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+  .btn-secondary { background: #edf2f7; color: #4a5568; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s; border: 1px solid #e2e8f0; }
+  .btn-secondary:hover { background: #e2e8f0; }
+  .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.5s ease; }
+  .step-section { display: none; animation: fadeIn 0.4s ease; }
+  .step-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  table.data-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  table.data-table th { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px; text-align: left; font-weight: 600; }
+  table.data-table td { padding: 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  table.data-table tr:nth-child(even) { background: #f8fafc; }
+  table.data-table tr:hover { background: #edf2f7; }
+  .checkbox-custom { width: 20px; height: 20px; accent-color: #667eea; cursor: pointer; }
+  .tag { display: inline-block; padding: 4px 8px; background: #e6fffa; color: #059669; border-radius: 4px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag.purple { background: #f0e7ff; color: #7c3aed; }
+  .tag.blue { background: #e0f2fe; color: #0284c7; }
+  .export-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+  .export-modal.hidden { display: none; }
+  .modal-content { background: white; padding: 32px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .scroll-container { max-height: 600px; overflow-y: auto; padding-right: 10px; }
+  .scroll-container::-webkit-scrollbar { width: 8px; }
+  .scroll-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+  .scroll-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .tooltip { position: relative; display: inline-block; cursor: help; }
+  .tooltip .tooltip-text { visibility: hidden; width: 200px; background: #1e293b; color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 1; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 12px; }
+  .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
+  .mark-badge { display: inline-block; padding: 2px 8px; background: #fef3c7; color: #d97706; border-radius: 12px; font-size: 11px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="card p-6 mb-6">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+      <div class="mb-4 md:mb-0">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2"><i class="fas fa-book-open text-purple-600 mr-3"></i>Vocabulary Materials Development Dashboard</h1>
+        <p class="text-gray-600">Interactive Worksheet | ELT Materials Development | Indonesian EFL Context | 90-Minute Project</p>
+      </div>
+      <div class="flex gap-3">
+        <button class="btn-secondary" onclick="loadExample()"><i class="fas fa-lightbulb mr-2"></i>Load Example</button>
+        <button class="btn-secondary" onclick="clearAll()"><i class="fas fa-trash mr-2"></i>Clear All</button>
+        <button class="btn-primary" onclick="exportProject()"><i class="fas fa-download mr-2"></i>Export Project</button>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="flex justify-between mb-2">
+        <span class="font-semibold text-gray-700">Project Completion</span>
+        <span class="font-bold text-purple-600" id="progress-text">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group Information -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-users text-purple-500 mr-2"></i>Group Information</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Group Members</label>
+        <input type="text" id="group-members" class="input-field" placeholder="Enter names separated by commas">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Class/Program</label>
+        <input type="text" id="class-program" class="input-field" placeholder="e.g., ELT 301">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+        <input type="date" id="project-date" class="input-field">
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">School Level</label>
+        <div class="flex gap-3">
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" name="school-level" value="sd" class="checkbox-custom mr-2" onchange="updateProgress()">
+            <span>SD/Elementary</span>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" name="school-level" value="smp" class="checkbox-custom mr-2" onchange="updateProgress()">
+            <span>SMP/Junior High</span>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" name="school-level" value="sma" class="checkbox-custom mr-2" onchange="updateProgress()">
+            <span>SMA/Senior High</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Proficiency Level</label>
+        <div class="flex gap-3">
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" name="proficiency" value="a1a2" class="checkbox-custom mr-2" onchange="updateProgress()">
+            <span>A1–A2 Beginner</span>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" name="proficiency" value="b1" class="checkbox-custom mr-2" onchange="updateProgress()">
+            <span>B1 Intermediate</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Theme</label>
+        <select id="theme" class="input-field" onchange="updateProgress()">
+          <option value="">Select Theme...</option>
+          <option value="tourism">Tourism</option>
+          <option value="environment">Environment</option>
+          <option value="technology">Technology</option>
+          <option value="health">Health</option>
+          <option value="culture">Culture</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="card p-2 mb-4">
+    <div class="flex flex-wrap gap-2">
+      <button class="tab-btn active" data-tab="step1" onclick="showTab('step1')">
+        Step 1: Vocabulary Set <span class="mark-badge ml-1">10%</span>
+      </button>
+      <button class="tab-btn inactive" data-tab="step2" onclick="showTab('step2')">
+        Step 2: Pre-Activity <span class="mark-badge ml-1">25%</span>
+      </button>
+      <button class="tab-btn inactive" data-tab="step3" onclick="showTab('step3')">
+        Step 3: Whilst-Activity <span class="mark-badge ml-1">40%</span>
+      </button>
+      <button class="tab-btn inactive" data-tab="step4" onclick="showTab('step4')">
+        Step 4: Post-Activity <span class="mark-badge ml-1">25%</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 1: Vocabulary Set -->
+  <div id="step1" class="step-section active">
+    <div class="card p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Step 1: Choose Your Vocabulary Set <span class="text-sm font-normal text-gray-500">(15 min)</span></h2>
+        <div class="flex gap-2">
+          <button class="btn-secondary" onclick="addVocabRow()"><i class="fas fa-plus mr-1"></i>Add Row</button>
+          <button class="btn-secondary" onclick="removeVocabRow()"><i class="fas fa-minus mr-1"></i>Remove</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="data-table" id="vocab-table">
+          <thead>
+            <tr>
+              <th style="width: 80px;">No.</th>
+              <th>Word</th>
+              <th>Part of Speech</th>
+              <th>Indonesian Meaning</th>
+              <th style="width: 50px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="vocab-tbody">
+            <tr>
+              <td class="text-center font-semibold">1</td>
+              <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+              <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+              <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+              <td class="text-center">
+                <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center font-semibold">2</td>
+              <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+              <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+              <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+              <td class="text-center">
+                <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center font-semibold">3</td>
+              <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+              <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+              <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+              <td class="text-center">
+                <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center font-semibold">4</td>
+              <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+              <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+              <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+              <td class="text-center">
+                <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-center font-semibold">5</td>
+              <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+              <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+              <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+              <td class="text-center">
+                <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r">
+        <p class="text-sm text-blue-800">
+          <i class="fas fa-info-circle mr-2"></i>
+          <strong>Tip:</strong> Select words appropriate for your students' level and theme. Record part of speech and Indonesian meaning for each word.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Pre-Activity -->
+  <div id="step2" class="step-section">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 2: Design Your Pre-Activity <span class="text-sm font-normal text-gray-500">(20 min)</span></h2>
+      <p class="text-gray-600 mb-4">Introduce words before the main task. Complete the table below, then add one brief use note for each word.</p>
+      
+      <div class="overflow-x-auto mb-6">
+        <table class="data-table" id="preactivity-table">
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Pronunciation</th>
+              <th>Indonesian Meaning</th>
+              <th>Example Sentence (Indonesian Context)</th>
+              <th>Check Question</th>
+            </tr>
+          </thead>
+          <tbody id="preactivity-tbody">
+            <tr>
+              <td><input type="text" class="input-field pre-word" placeholder="Word 1"></td>
+              <td><input type="text" class="input-field pre-pronun" placeholder="/pəˈluːʃən/"></td>
+              <td><input type="text" class="input-field pre-indo" placeholder="Indonesian meaning"></td>
+              <td><textarea class="input-field pre-example" rows="2" placeholder="Example sentence using Indonesian context"></textarea></td>
+              <td><textarea class="input-field pre-check" rows="2" placeholder="Check question"></textarea></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="input-field pre-word" placeholder="Word 2"></td>
+              <td><input type="text" class="input-field pre-pronun" placeholder="/səˈsteɪnəbəl/"></td>
+              <td><input type="text" class="input-field pre-indo" placeholder="Indonesian meaning"></td>
+              <td><textarea class="input-field pre-example" rows="2" placeholder="Example sentence using Indonesian context"></textarea></td>
+              <td><textarea class="input-field pre-check" rows="2" placeholder="Check question"></textarea></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="input-field pre-word" placeholder="Word 3"></td>
+              <td><input type="text" class="input-field pre-pronun" placeholder="/ˌriːˈsaɪkəl/"></td>
+              <td><input type="text" class="input-field pre-indo" placeholder="Indonesian meaning"></td>
+              <td><textarea class="input-field pre-example" rows="2" placeholder="Example sentence using Indonesian context"></textarea></td>
+              <td><textarea class="input-field pre-check" rows="2" placeholder="Check question"></textarea></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="input-field pre-word" placeholder="Word 4"></td>
+              <td><input type="text" class="input-field pre-pronun" placeholder="/diˌfɒrɪˈsteɪʃən/"></td>
+              <td><input type="text" class="input-field pre-indo" placeholder="Indonesian meaning"></td>
+              <td><textarea class="input-field pre-example" rows="2" placeholder="Example sentence using Indonesian context"></textarea></td>
+              <td><textarea class="input-field pre-check" rows="2" placeholder="Check question"></textarea></td>
+            </tr>
+            <tr>
+              <td><input type="text" class="input-field pre-word" placeholder="Word 5"></td>
+              <td><input type="text" class="input-field pre-pronun" placeholder="/ɪˈmɪʃən/"></td>
+              <td><input type="text" class="input-field pre-indo" placeholder="Indonesian meaning"></td>
+              <td><textarea class="input-field pre-example" rows="2" placeholder="Example sentence using Indonesian context"></textarea></td>
+              <td><textarea class="input-field pre-check" rows="2" placeholder="Check question"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="text-lg font-bold text-gray-800 mb-3">Use Notes (Collocation, Grammar Pattern, or Register)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold text-gray-600 mb-1">Word 1:</p>
+          <textarea class="input-field" rows="2" placeholder="e.g., air pollution (common collocation)"></textarea>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold text-gray-600 mb-1">Word 2:</p>
+          <textarea class="input-field" rows="2" placeholder="e.g., sustainable + noun"></textarea>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold text-gray-600 mb-1">Word 3:</p>
+          <textarea class="input-field" rows="2" placeholder="e.g., recycle + object"></textarea>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold text-gray-600 mb-1">Word 4:</p>
+          <textarea class="input-field" rows="2" placeholder="e.g., common in environmental topics"></textarea>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold text-gray-600 mb-1">Word 5:</p>
+          <textarea class="input-field" rows="2" placeholder="e.g., carbon emissions (common collocation)"></textarea>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-bold text-gray-800 mb-3">Presentation Method</h3>
+      <div class="flex flex-wrap gap-4 mb-4">
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="presentation-method" value="picture-cards" class="checkbox-custom mr-2" onchange="updateProgress()">
+          <span>Picture Cards</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="presentation-method" value="short-video" class="checkbox-custom mr-2" onchange="updateProgress()">
+          <span>Short Video</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="presentation-method" value="realia" class="checkbox-custom mr-2" onchange="updateProgress()">
+          <span>Realia</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="presentation-method" value="teacher-explanation" class="checkbox-custom mr-2" onchange="updateProgress()">
+          <span>Teacher Explanation</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input type="radio" name="presentation-method" value="other" class="checkbox-custom mr-2" onchange="updateProgress()">
+          <span>Other</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Whilst-Activity -->
+  <div id="step3" class="step-section">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 3: Design Your Whilst-Activity <span class="text-sm font-normal text-gray-500">(35 min)</span></h2>
+      
+      <!-- Activity A: Guided Practice -->
+      <div class="mb-8 p-5 bg-purple-50 rounded-lg border border-purple-200">
+        <h3 class="text-xl font-bold text-purple-700 mb-3"><i class="fas fa-pencil-alt mr-2"></i>Activity A — Guided Practice</h3>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Activity Type</label>
+          <div class="flex flex-wrap gap-4">
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-a-type" value="gap-fill" class="checkbox-custom mr-2">
+              <span>Gap-fill</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-a-type" value="matching" class="checkbox-custom mr-2">
+              <span>Matching</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-a-type" value="word-sort" class="checkbox-custom mr-2">
+              <span>Word sort</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-a-type" value="sentence-completion" class="checkbox-custom mr-2">
+              <span>Sentence completion</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Student Instructions (write exactly as students will read them)</label>
+          <textarea id="activity-a-instructions" class="input-field" rows="3" placeholder="e.g., Complete each sentence with the correct word from the box. Use each word only once."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Word Box</label>
+          <div class="flex gap-2 flex-wrap" id="activity-a-wordbox">
+            <input type="text" class="input-field" placeholder="Word 1" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 2" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 3" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 4" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 5" style="width: 180px;">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Task Items</label>
+          <textarea id="activity-a-tasks" class="input-field" rows="6" placeholder="1. Sentence 1 with blank...&#10;2. Sentence 2 with blank...&#10;3. Sentence 3 with blank...&#10;4. Sentence 4 with blank...&#10;5. Sentence 5 with blank..."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Answer Key</label>
+          <textarea id="activity-a-answers" class="input-field" rows="2" placeholder="1. answer  2. answer  3. answer  4. answer  5. answer"></textarea>
+        </div>
+      </div>
+
+      <!-- Activity B: Communicative Practice -->
+      <div class="mb-8 p-5 bg-blue-50 rounded-lg border border-blue-200">
+        <h3 class="text-xl font-bold text-blue-700 mb-3"><i class="fas fa-comments mr-2"></i>Activity B — Communicative Practice</h3>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Activity Type</label>
+          <div class="flex flex-wrap gap-4">
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-b-type" value="role-play" class="checkbox-custom mr-2">
+              <span>Role-play</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-b-type" value="group-discussion" class="checkbox-custom mr-2">
+              <span>Group discussion</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-b-type" value="information-gap" class="checkbox-custom mr-2">
+              <span>Information gap</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-b-type" value="debate" class="checkbox-custom mr-2">
+              <span>Debate</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input type="radio" name="activity-b-type" value="game" class="checkbox-custom mr-2">
+              <span>Game</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Student Instructions (write exactly as students will read them)</label>
+          <textarea id="activity-b-instructions" class="input-field" rows="3" placeholder="e.g., In groups of four, discuss the questions below about environmental problems in Indonesia. Each person must speak at least once."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Prompts / Role Cards / Game Rules</label>
+          <textarea id="activity-b-prompts" class="input-field" rows="6" placeholder="1. Question 1...&#10;2. Question 2...&#10;3. Question 3...&#10;4. Question 4...&#10;After the discussion, each group shares one key idea..."></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Target Words to Use (students must use all five)</label>
+          <div class="flex gap-2 flex-wrap" id="activity-b-words">
+            <input type="text" class="input-field" placeholder="Word 1" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 2" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 3" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 4" style="width: 180px;">
+            <input type="text" class="input-field" placeholder="Word 5" style="width: 180px;">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Teacher Note (setup, timing, closing)</label>
+          <textarea id="activity-b-note" class="input-field" rows="3" placeholder="e.g., Arrange desks in circles of four. Give 10 minutes for discussion, then 5 minutes for whole-class sharing."></textarea>
+        </div>
+      </div>
+
+      <!-- Rationale -->
+      <div class="p-5 bg-yellow-50 rounded-lg border border-yellow-200">
+        <h3 class="text-lg font-bold text-yellow-800 mb-3"><i class="fas fa-lightbulb mr-2"></i>Brief Rationale</h3>
+        <p class="text-sm text-gray-700 mb-2">Explain the movement from receptive to productive use:</p>
+        <textarea id="rationale" class="input-field" rows="5" placeholder="e.g., The gap-fill in Activity A keeps lexical choice controlled, so it mainly supports receptive recognition with limited production. The group discussion in Activity B requires learners to retrieve and use the same words more independently, so it supports a clearer move toward productive use. This sequence is suitable for [level] learners because they still benefit from lexical support before freer speaking."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Post-Activity -->
+  <div id="step4" class="step-section">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Step 4: Design Your Post-Activity <span class="text-sm font-normal text-gray-500">(20 min)</span></h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Post-Activity 1: End of This Lesson -->
+        <div class="p-5 bg-green-50 rounded-lg border border-green-200">
+          <h3 class="text-xl font-bold text-green-700 mb-3"><i class="fas fa-check-circle mr-2"></i>Post-Activity 1: End of This Lesson</h3>
+          <p class="text-sm text-gray-600 mb-4"><strong>Purpose:</strong> Quick check of meaning and form (2–3 minutes)</p>
+          
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Activity Type</label>
+            <select id="post1-type" class="input-field">
+              <option value="">Select type...</option>
+              <option value="definition-quiz">Definition quiz</option>
+              <option value="word-bingo">Word bingo</option>
+              <option value="exit-ticket">Exit ticket</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Student Instructions</label>
+            <textarea id="post1-instructions" class="input-field" rows="2" placeholder="e.g., Listen to each definition. Write the correct word."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Task Items</label>
+            <textarea id="post1-tasks" class="input-field" rows="5" placeholder="1. Definition/Question 1...&#10;2. Definition/Question 2...&#10;3. Definition/Question 3...&#10;4. Definition/Question 4...&#10;5. Definition/Question 5..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Answer Key</label>
+            <textarea id="post1-answers" class="input-field" rows="2" placeholder="1. answer  2. answer  3. answer  4. answer  5. answer"></textarea>
+          </div>
+        </div>
+
+        <!-- Post-Activity 2: Start of Next Class -->
+        <div class="p-5 bg-orange-50 rounded-lg border border-orange-200">
+          <h3 class="text-xl font-bold text-orange-700 mb-3"><i class="fas fa-play-circle mr-2"></i>Post-Activity 2: Start of Next Class</h3>
+          <p class="text-sm text-gray-600 mb-4"><strong>Purpose:</strong> Short recall activity (3–5 minutes) recycling words in different format</p>
+          
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Activity Type</label>
+            <select id="post2-type" class="input-field">
+              <option value="">Select type...</option>
+              <option value="sentence-recall">Sentence recall</option>
+              <option value="word-web">Word web</option>
+              <option value="collocations-check">Collocations check</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Student Instructions</label>
+            <textarea id="post2-instructions" class="input-field" rows="2" placeholder="e.g., Complete each sentence using the correct word. Work from memory."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Task Items</label>
+            <textarea id="post2-tasks" class="input-field" rows="5" placeholder="1. Sentence with blank...&#10;2. Sentence with blank...&#10;3. Sentence with blank...&#10;4. Sentence with blank...&#10;5. Sentence with blank..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Answer Key</label>
+            <textarea id="post2-answers" class="input-field" rows="2" placeholder="1. answer  2. answer  3. answer  4. answer  5. answer"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marking Criteria Reference -->
+  <div class="card p-6 mt-6 mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fas fa-clipboard-check text-purple-500 mr-2"></i>Marking Criteria Reference</h2>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Component</th>
+            <th>What We Are Looking For</th>
+            <th>Marks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-bold">1</td>
+            <td>Vocabulary Set</td>
+            <td>Words are appropriate to the chosen level and theme; Indonesian meanings are correct; part of speech is accurately identified; all five words are clearly recorded.</td>
+            <td><span class="tag">10%</span></td>
+          </tr>
+          <tr>
+            <td class="font-bold">2</td>
+            <td>Pre-Activity</td>
+            <td>All five words include pronunciation, Indonesian meaning, an example sentence using an Indonesian context, a clear check question, and one brief use note (collocation, grammar pattern, or register); the presentation method is appropriate for the level.</td>
+            <td><span class="tag purple">25%</span></td>
+          </tr>
+          <tr>
+            <td class="font-bold">3</td>
+            <td>Whilst-Activity</td>
+            <td>Activity A includes complete task items with a correct answer key; Activity B includes full student instructions, structured prompts or role cards, and a teacher setup note; both activities demonstrate a clear progression from guided to communicative practice; the rationale explains the movement from receptive to productive use.</td>
+            <td><span class="tag purple">40%</span></td>
+          </tr>
+          <tr>
+            <td class="font-bold">4</td>
+            <td>Post-Activity</td>
+            <td>Post-Activity 1 is concise and completable within 2–3 minutes; Post-Activity 2 recycles the same five words in a different format; both activities include complete task items and answer keys.</td>
+            <td><span class="tag purple">25%</span></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-right font-bold text-lg">TOTAL</td>
+            <td><span class="tag blue">100%</span></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Export Modal -->
+<div id="export-modal" class="export-modal hidden">
+  <div class="modal-content">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold text-gray-800">Export Project</h3>
+      <button class="text-gray-500 hover:text-gray-700 text-2xl" onclick="closeExportModal()">&times;</button>
+    </div>
+    <p class="text-gray-600 mb-4">Copy the text below to share your project, or download as a text file.</p>
+    <textarea id="export-textarea" class="input-field" rows="15" readonly></textarea>
+    <div class="flex gap-3 mt-4">
+      <button class="btn-primary" onclick="copyToClipboard()"><i class="fas fa-copy mr-2"></i>Copy to Clipboard</button>
+      <button class="btn-primary" onclick="downloadAsText()"><i class="fas fa-download mr-2"></i>Download as TXT</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+  <span id="toast-message"></span>
+</div>
+
+<script>
+// Tab Navigation
+function showTab(tabId) {
+  document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+    btn.classList.add('inactive');
+  });
+  
+  document.getElementById(tabId).classList.add('active');
+  const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+  activeBtn.classList.remove('inactive');
+  activeBtn.classList.add('active');
+}
+
+// Vocab Table Management
+let vocabRowCount = 5;
+
+function addVocabRow() {
+  vocabRowCount++;
+  const tbody = document.getElementById('vocab-tbody');
+  const newRow = document.createElement('tr');
+  newRow.innerHTML = `
+    <td class="text-center font-semibold">${vocabRowCount}</td>
+    <td><input type="text" class="input-field vocab-word" placeholder="Enter word"></td>
+    <td><input type="text" class="input-field vocab-pos" placeholder="e.g., noun, verb"></td>
+    <td><input type="text" class="input-field vocab-indo" placeholder="Indonesian meaning"></td>
+    <td class="text-center">
+      <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+    </td>
+  `;
+  tbody.appendChild(newRow);
+  renumberVocabRows();
+  updateProgress();
+}
+
+function deleteVocabRow(btn) {
+  const row = btn.closest('tr');
+  row.remove();
+  vocabRowCount--;
+  renumberVocabRows();
+  updateProgress();
+}
+
+function removeVocabRow() {
+  const tbody = document.getElementById('vocab-tbody');
+  if (tbody.rows.length > 1) {
+    tbody.removeChild(tbody.lastRow);
+    vocabRowCount--;
+    renumberVocabRows();
+    updateProgress();
+  }
+}
+
+function renumberVocabRows() {
+  const rows = document.getElementById('vocab-tbody').rows;
+  for (let i = 0; i < rows.length; i++) {
+    rows[i].cells[0].textContent = i + 1;
+  }
+  vocabRowCount = rows.length;
+}
+
+// Progress Tracking
+function updateProgress() {
+  let filled = 0;
+  let total = 0;
+  
+  // Group info (3 fields + 3 radio groups + 1 select)
+  const groupFields = ['group-members', 'class-program', 'project-date'];
+  groupFields.forEach(id => {
+    total++;
+    if (document.getElementById(id).value.trim()) filled++;
+  });
+  ['school-level', 'proficiency'].forEach(name => {
+    total++;
+    if (document.querySelector(`input[name="${name}"]:checked`)) filled++;
+  });
+  total++;
+  if (document.getElementById('theme').value) filled++;
+  
+  // Step 1: 5 rows x 3 fields
+  const vocabRows = document.querySelectorAll('#vocab-tbody tr');
+  vocabRows.forEach(row => {
+    total += 3;
+    const word = row.querySelector('.vocab-word').value.trim();
+    const pos = row.querySelector('.vocab-pos').value.trim();
+    const indo = row.querySelector('.vocab-indo').value.trim();
+    if (word) filled++;
+    if (pos) filled++;
+    if (indo) filled++;
+  });
+  
+  // Step 2: 5 rows x 5 fields + presentation method
+  const preRows = document.querySelectorAll('#preactivity-tbody tr');
+  preRows.forEach(row => {
+    total += 5;
+    row.querySelectorAll('input, textarea').forEach(field => {
+      if (field.value.trim()) filled++;
+    });
+  });
+  total++;
+  if (document.querySelector('input[name="presentation-method"]:checked')) filled++;
+  
+  // Step 3
+  total += 6; // instructions, tasks, answers for A; instructions, prompts, note for B + rationale
+  ['activity-a-instructions', 'activity-a-tasks', 'activity-a-answers', 
+   'activity-b-instructions', 'activity-b-prompts', 'activity-b-note', 'rationale'].forEach(id => {
+    if (document.getElementById(id).value.trim()) filled++;
+  });
+  
+  // Step 4
+  total += 4;
+  ['post1-instructions', 'post1-tasks', 'post2-instructions', 'post2-tasks'].forEach(id => {
+    if (document.getElementById(id).value.trim()) filled++;
+  });
+  
+  const percent = Math.round((filled / total) * 100);
+  document.getElementById('progress-fill').style.width = percent + '%';
+  document.getElementById('progress-text').textContent = percent + '%';
+}
+
+// Add event listeners for progress tracking
+document.addEventListener('input', updateProgress);
+document.addEventListener('change', updateProgress);
+
+// Load Example Data
+function loadExample() {
+  document.getElementById('group-members').value = 'Group 1 - Alpha Team';
+  document.getElementById('class-program').value = 'ELT 301 - Materials Development';
+  document.getElementById('project-date').valueAsDate = new Date();
+  
+  document.querySelector('input[name="school-level"][value="sma"]').checked = true;
+  document.querySelector('input[name="proficiency"][value="b1"]').checked = true;
+  document.getElementById('theme').value = 'environment';
+  
+  const vocabData = [
+    ['pollution', 'noun', 'polusi'],
+    ['sustainable', 'adjective', 'berkelanjutan'],
+    ['recycle', 'verb', 'mendaur ulang'],
+    ['deforestation', 'noun', 'penebangan hutan'],
+    ['emission', 'noun', 'emisi']
+  ];
+  
+  const vocabTbody = document.getElementById('vocab-tbody');
+  vocabTbody.innerHTML = '';
+  vocabData.forEach((data, idx) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="text-center font-semibold">${idx + 1}</td>
+      <td><input type="text" class="input-field vocab-word" value="${data[0]}"></td>
+      <td><input type="text" class="input-field vocab-pos" value="${data[1]}"></td>
+      <td><input type="text" class="input-field vocab-indo" value="${data[2]}"></td>
+      <td class="text-center">
+        <button class="text-red-500 hover:text-red-700" onclick="deleteVocabRow(this)"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+    vocabTbody.appendChild(row);
+  });
+  vocabRowCount = 5;
+  
+  const preData = [
+    ['pollution', '/pəˈluːʃən/', 'polusi', 'Air pollution from factory smoke is a serious problem in many Indonesian cities.', 'If a river smells bad because a factory dumps waste into it, what word describes that?'],
+    ['sustainable', '/səˈsteɪnəbəl/', 'berkelanjutan', 'Switching to sustainable energy like solar power helps Indonesia protect its forests.', 'A farming method that does not damage the soil over many years — what is this called?'],
+    ['recycle', '/ˌriːˈsaɪkəl/', 'mendaur ulang', 'Students in Palembang recycle plastic bottles into craft items for school projects.', 'When we turn old plastic into new products instead of throwing them away, what do we do?'],
+    ['deforestation', '/diˌfɒrɪˈsteɪʃən/', 'penebangan hutan', 'Deforestation in Kalimantan is destroying the habitat of orangutans.', 'Which word means cutting down large areas of forest?'],
+    ['emission', '/ɪˈmɪʃən/', 'emisi', 'Carbon emissions from vehicles and factories are the main cause of air pollution in Jakarta.', 'What is the English word for gases released from car exhausts or factory chimneys?']
+  ];
+  
+  const preTbody = document.getElementById('preactivity-tbody');
+  preTbody.innerHTML = '';
+  preData.forEach(data => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" class="input-field pre-word" value="${data[0]}"></td>
+      <td><input type="text" class="input-field pre-pronun" value="${data[1]}"></td>
+      <td><input type="text" class="input-field pre-indo" value="${data[2]}"></td>
+      <td><textarea class="input-field pre-example" rows="2">${data[3]}</textarea></td>
+      <td><textarea class="input-field pre-check" rows="2">${data[4]}</textarea></td>
+    `;
+    preTbody.appendChild(row);
+  });
+  
+  // Use notes
+  const useNoteTextareas = document.querySelectorAll('.p-3.bg-gray-50 .input-field');
+  useNoteTextareas[0].value = 'air pollution (common collocation)';
+  useNoteTextareas[1].value = 'sustainable + noun, as in sustainable energy';
+  useNoteTextareas[2].value = 'recycle + object, as in recycle plastic';
+  useNoteTextareas[3].value = 'carbon emissions (common collocation)';
+  useNoteTextareas[4].value = 'deforestation is common in environmental and academic topics';
+  
+  document.querySelector('input[name="presentation-method"][value="picture-cards"]').checked = true;
+  
+  // Activity A
+  document.querySelector('input[name="activity-a-type"][value="gap-fill"]').checked = true;
+  document.getElementById('activity-a-instructions').value = 'Complete each sentence with the correct word from the box. Use each word only once.';
+  
+  const wordBoxInputs = document.getElementById('activity-a-wordbox').querySelectorAll('input');
+  ['pollution', 'sustainable', 'recycle', 'deforestation', 'emission'].forEach((word, i) => {
+    wordBoxInputs[i].value = word;
+  });
+  
+  document.getElementById('activity-a-tasks').value = `1. Carbon ________ from vehicles and factories is the main cause of global warming.
+2. Air ________ in Jakarta has worsened because of increased traffic and industry.
+3. We should ________ plastic bottles and paper instead of throwing them away.
+4. ________ in Sumatra has destroyed thousands of hectares of rainforest in recent decades.
+5. Indonesia plans to use ________ energy sources, such as solar and geothermal power, by 2030.`;
+  document.getElementById('activity-a-answers').value = '1. emission  2. pollution  3. recycle  4. Deforestation  5. sustainable';
+  
+  // Activity B
+  document.querySelector('input[name="activity-b-type"][value="group-discussion"]').checked = true;
+  document.getElementById('activity-b-instructions').value = 'In groups of four, discuss the questions below about environmental problems in Indonesia. Each person must speak at least once. Try to use all five target words naturally in your discussion.';
+  
+  document.getElementById('activity-b-prompts').value = `1. What is the biggest environmental problem in your city or region? Give one example.
+2. What can students do at school to reduce pollution or carbon emissions?
+3. Do you think Indonesia can have a fully sustainable energy system by 2050? Why or why not?
+4. If the government wanted to stop deforestation in Kalimantan, what three actions would you recommend?
+
+After the discussion, each group shares one key idea: "Our group believes __________ is the most important step because __________."`;
+  
+  const wordsB = document.getElementById('activity-b-words').querySelectorAll('input');
+  ['pollution', 'sustainable', 'recycle', 'deforestation', 'emission'].forEach((word, i) => {
+    wordsB[i].value = word;
+  });
+  
+  document.getElementById('activity-b-note').value = 'Arrange desks in circles of four. Give 10 minutes for discussion, then 5 minutes for whole-class sharing. Display the five target words on the projector. Award a point to each group that uses all five words correctly.';
+  
+  document.getElementById('rationale').value = 'The gap-fill in Activity A keeps lexical choice controlled, so it mainly supports receptive recognition with limited production. The group discussion in Activity B requires learners to retrieve and use the same words more independently, so it supports a clearer move toward productive use. This sequence is suitable for SMA B1 learners because they still benefit from lexical support before freer speaking.';
+  
+  // Post-Activity 1
+  document.getElementById('post1-type').value = 'definition-quiz';
+  document.getElementById('post1-instructions').value = 'Listen to each definition. Write the correct word. You have 10 seconds per item.';
+  document.getElementById('post1-tasks').value = `1. Contamination of air, water, or soil.
+2. Able to continue without harming the environment.
+3. To convert waste into reusable material.
+4. Large-scale cutting down of forests.
+5. Gases released from engines or factories.`;
+  document.getElementById('post1-answers').value = '1. pollution  2. sustainable  3. recycle  4. deforestation  5. emission';
+  
+  // Post-Activity 2
+  document.getElementById('post2-type').value = 'sentence-recall';
+  document.getElementById('post2-instructions').value = 'Complete each sentence using the correct word. Work from memory. Do not look at your notes.';
+  document.getElementById('post2-tasks').value = `1. Air ________ from vehicles is getting worse in Jakarta.
+2. We should use ________ energy sources like solar panels.
+3. The school plans to ________ paper waste every Friday.
+4. ________ in Sumatra has caused many animals to lose their habitat.
+5. Reducing carbon ________ is the most important step in fighting climate change.`;
+  document.getElementById('post2-answers').value = '1. pollution  2. sustainable  3. recycle  4. Deforestation  5. emission';
+  
+  showToast('Example data loaded successfully!');
+  updateProgress();
+}
+
+// Clear All
+function clearAll() {
+  if (!confirm('Are you sure you want to clear all data?')) return;
+  
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+    el.value = '';
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(el => {
+    el.checked = false;
+  });
+  document.querySelectorAll('select').forEach(el => {
+    el.selectedIndex = 0;
+  });
+  document.getElementById('project-date').value = '';
+  
+  showToast('All data cleared!');
+  updateProgress();
+}
+
+// Export Project
+function exportProject() {
+  const exportData = [];
+  
+  // Group Info
+  exportData.push('GROUP INFORMATION');
+  exportData.push(`Group Members: ${document.getElementById('group-members').value || 'Not specified'}`);
+  exportData.push(`Class/Program: ${document.getElementById('class-program').value || 'Not specified'}`);
+  exportData.push(`Date: ${document.getElementById('project-date').value || 'Not specified'}`);
+  exportData.push(`School Level: ${document.querySelector('input[name="school-level"]:checked')?.parentElement.textContent.trim() || 'Not selected'}`);
+  exportData.push(`Proficiency Level: ${document.querySelector('input[name="proficiency"]:checked')?.parentElement.textContent.trim() || 'Not selected'}`);
+  exportData.push(`Theme: ${document.getElementById('theme').value || 'Not selected'}`);
+  exportData.push('\n---\n');
+  
+  // Step 1
+  exportData.push('STEP 1: VOCABULARY SET');
+  const vocabRows = document.querySelectorAll('#vocab-tbody tr');
+  vocabRows.forEach((row, idx) => {
+    const word = row.querySelector('.vocab-word').value;
+    const pos = row.querySelector('.vocab-pos').value;
+    const indo = row.querySelector('.vocab-indo').value;
+    exportData.push(`${idx + 1}. ${word} (${pos}) - ${indo}`);
+  });
+  exportData.push('\n---\n');
+  
+  // Step 2
+  exportData.push('STEP 2: PRE-ACTIVITY');
+  const preRows = document.querySelectorAll('#preactivity-tbody tr');
+  preRows.forEach((row, idx) => {
+    const word = row.querySelector('.pre-word').value;
+    const pronun = row.querySelector('.pre-pronun').value;
+    const indo = row.querySelector('.pre-indo').value;
+    const example = row.querySelector('.pre-example').value;
+    const check = row.querySelector('.pre-check').value;
+    exportData.push(`Word ${idx + 1}: ${word} (${pronun})`);
+    exportData.push(`  Indonesian: ${indo}`);
+    exportData.push(`  Example: ${example}`);
+    exportData.push(`  Check Q: ${check}`);
+  });
+  exportData.push('\n---\n');
+  
+  // Step 3
+  exportData.push('STEP 3: WHILST-ACTIVITY');
+  exportData.push('Activity A: Guided Practice');
+  exportData.push(`Instructions: ${document.getElementById('activity-a-instructions').value}`);
+  exportData.push(`Tasks: ${document.getElementById('activity-a-tasks').value}`);
+  exportData.push(`Answers: ${document.getElementById('activity-a-answers').value}`);
+  exportData.push('\n');
+  exportData.push('Activity B: Communicative Practice');
+  exportData.push(`Instructions: ${document.getElementById('activity-b-instructions').value}`);
+  exportData.push(`Prompts: ${document.getElementById('activity-b-prompts').value}`);
+  exportData.push(`Teacher Note: ${document.getElementById('activity-b-note').value}`);
+  exportData.push(`\nRationale: ${document.getElementById('rationale').value}`);
+  exportData.push('\n---\n');
+  
+  // Step 4
+  exportData.push('STEP 4: POST-ACTIVITY');
+  exportData.push('Post-Activity 1 (End of Lesson):');
+  exportData.push(`Instructions: ${document.getElementById('post1-instructions').value}`);
+  exportData.push(`Tasks: ${document.getElementById('post1-tasks').value}`);
+  exportData.push(`Answers: ${document.getElementById('post1-answers').value}`);
+  exportData.push('\n');
+  exportData.push('Post-Activity 2 (Next Class):');
+  exportData.push(`Instructions: ${document.getElementById('post2-instructions').value}`);
+  exportData.push(`Tasks: ${document.getElementById('post2-tasks').value}`);
+  exportData.push(`Answers: ${document.getElementById('post2-answers').value}`);
+  
+  const exportText = exportData.join('\n');
+  document.getElementById('export-textarea').value = exportText;
+  document.getElementById('export-modal').classList.remove('hidden');
+}
+
+function closeExportModal() {
+  document.getElementById('export-modal').classList.add('hidden');
+}
+
+function copyToClipboard() {
+  const textarea = document.getElementById('export-textarea');
+  textarea.select();
+  document.execCommand('copy');
+  showToast('Copied to clipboard!');
+}
+
+function downloadAsText() {
+  const text = document.getElementById('export-textarea').value;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'vocabulary-project.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Download started!');
+}
+
+// Toast Notification
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-message').textContent = message;
+  toast.classList.remove('translate-y-20', 'opacity-0');
+  setTimeout(() => {
+    toast.classList.add('translate-y-20', 'opacity-0');
+  }, 3000);
+}
+
+// Initialize progress
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgress();
+});
+</script>
+
+</body>
+</html>
