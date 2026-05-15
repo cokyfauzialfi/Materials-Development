@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar Materials Development Project</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #e0e7ff;
+      --primary-dark: #3730a3;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --model-bg: #f0fdf4;
+      --model-border: #bbf7d0;
+      --model-text: #166534;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .logo { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 32px; display: flex; align-items: center; gap: 8px; }
+    .nav-step { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; cursor: pointer; transition: var(--transition); margin-bottom: 8px; color: var(--text-muted); font-weight: 500; }
+    .nav-step:hover { background: var(--primary-light); color: var(--primary-dark); }
+    .nav-step.active { background: var(--primary); color: white; box-shadow: var(--shadow); }
+    .nav-step .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid currentColor; display: grid; place-items: center; font-size: 0.75rem; transition: var(--transition); }
+    .nav-step.completed .check { background: var(--success); border-color: var(--success); color: white; }
+    .nav-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .nav-group-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin: 16px 0 8px 14px; letter-spacing: 0.05em; }
+
+    /* Main */
+    .main { padding: 32px; max-width: 1200px; width: 100%; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .title h1 { font-size: 1.75rem; font-weight: 700; }
+    .title p { color: var(--text-muted); }
+    .actions { display: flex; gap: 10px; }
+    .btn { padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-weight: 600; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+    .btn:hover { background: var(--bg); transform: translateY(-1px); }
+    .btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .btn.primary:hover { background: var(--primary-dark); }
+
+    /* Progress */
+    .progress-wrap { background: var(--border); height: 6px; border-radius: 4px; margin: 16px 0 32px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), #8b5cf6); width: 0%; transition: width 0.4s ease; border-radius: 4px; }
+
+    /* Content Sections */
+    .step-section { display: none; animation: fadeIn 0.3s ease; }
+    .step-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .card { background: var(--surface); padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border); }
+    .card h2 { font-size: 1.25rem; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .badge { font-size: 0.75rem; padding: 4px 8px; background: var(--primary-light); color: var(--primary-dark); border-radius: 6px; font-weight: 600; }
+    
+    /* Model Example Card Styles */
+    .model-card { background: var(--model-bg); border: 1px solid var(--model-border); border-left: 4px solid var(--success); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    .model-card h3 { color: var(--model-text); font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .model-card h3::before { content: "✓"; background: var(--success); color: white; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .model-content { background: white; padding: 16px; border-radius: 8px; border: 1px dashed var(--model-border); color: var(--text); }
+    .model-content strong { color: var(--model-text); }
+    .model-content table { margin: 12px 0; }
+    .model-content th { background: var(--model-bg); color: var(--model-text); }
+    .model-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; color: var(--success); background: #dcfce7; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+
+    /* Forms */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); font-size: 0.875rem; }
+    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-family: inherit; font-size: 0.95rem; transition: var(--transition); resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    textarea { min-height: 100px; }
+    
+    .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: var(--transition); background: white; }
+    .checkbox-item:hover { border-color: var(--primary); }
+    .checkbox-item.selected { background: var(--primary-light); border-color: var(--primary); }
+    .checkbox-item input { display: none; }
+    
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--bg); font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .task-input { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .task-input span { font-weight: bold; color: var(--text-muted); min-width: 20px; }
+    
+    .word-counter { text-align: right; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .word-counter.over { color: #ef4444; }
+
+    /* Print */
+    @media print {
+      .sidebar, .actions, .progress-wrap, .nav-step .check, .nav-group-label, .nav-step[data-target="stepModel"] { display: none; }
+      .app { grid-template-columns: 1fr; }
+      .main { padding: 0; }
+      .card { box-shadow: none; border: 1px solid #000; break-inside: avoid; }
+      input, textarea, select { border: none; padding: 0; background: transparent; resize: none; }
+      .step-section { display: block !important; margin-bottom: 40px; }
+      .step-section.active { display: block; }
+    }
+    @media (max-width: 768px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; bottom: 0; top: auto; left: 0; right: 0; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; z-index: 100; border-top: 1px solid var(--border); border-right: none; }
+      .logo, .nav-group-label { display: none; }
+      .nav-step { white-space: nowrap; margin: 0; padding: 10px 16px; }
+      .main { padding-bottom: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">📐 Grammar Dashboard</div>
+      <div class="nav-group-label">Your Project</div>
+      <nav id="navMenu">
+        <div class="nav-step active" data-target="step1"><span class="check">1</span> Structure & Context</div>
+        <div class="nav-step" data-target="step2"><span class="check">2</span> 3D Analysis</div>
+        <div class="nav-step" data-target="step3"><span class="check">3</span> PPP Design</div>
+        <div class="nav-step" data-target="step4"><span class="check">4</span> Activities</div>
+        <div class="nav-step" data-target="step5"><span class="check">5</span> Reflection</div>
+        <div class="nav-step" data-target="step6"><span class="check">6</span> Peer Feedback</div>
+        
+        <div class="nav-divider"></div>
+        <div class="nav-group-label">Reference</div>
+        <div class="nav-step" data-target="stepModel"><span class="check" style="border-style: dashed;">📖</span> Model Examples</div>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div class="title">
+          <h1>Grammar Materials Development</h1>
+          <p>Interactive Group Worksheet | Indonesian EFL Context</p>
+        </div>
+        <div class="actions">
+          <button class="btn" onclick="clearData()">🗑️ Clear</button>
+          <button class="btn primary" onclick="window.print()">🖨️ Export PDF</button>
+        </div>
+      </header>
+
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+      <!-- STEP 1 -->
+      <section id="step1" class="step-section active">
+        <div class="card">
+          <h2>Step 1: Choose Grammar Structure & Context <span class="badge">10 min</span></h2>
+          <p class="text-muted" style="margin-bottom:16px; color:var(--text-muted)">Tick one structure below. Then fill in your teaching context.</p>
+          <div class="checkbox-group" id="grammarOptions">
+            <label class="checkbox-item"><input type="radio" name="grammar" value="Present perfect"><div><strong>Present perfect</strong><br><span style="font-size:0.85rem;color:var(--text-muted)">A2–B1 • SMP IX / SMA X</span></div></label>
+            <label class="checkbox-item"><input type="radio" name="grammar" value="Passive voice"><div><strong>Passive voice</strong><br><span style="font-size:0.85rem;color:var(--text-muted)">B1 • SMA XI</span></div></label>
+            <label class="checkbox-item"><input type="radio" name="grammar" value="Conditional Sentences"><div><strong>Conditional Sentences</strong><br><span style="font-size:0.85rem;color:var(--text-muted)">B1–B2 • SMA XI–XII</span></div></label>
+            <label class="checkbox-item"><input type="radio" name="grammar" value="Relative clauses"><div><strong>Relative clauses</strong><br><span style="font-size:0.85rem;color:var(--text-muted)">B1–B2 • SMA XI–XII</span></div></label>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Grammar structure chosen</label><input type="text" id="chosenGrammar" placeholder="e.g. Passive voice"></div>
+            <div class="form-group"><label>Grade level (SMP/SMA)</label><input type="text" id="gradeLevel" placeholder="e.g. SMA Grade XI"></div>
+            <div class="form-group"><label>Proficiency level</label><select id="profLevel"><option>A2</option><option selected>B1</option><option>B2</option></select></div>
+            <div class="form-group"><label>Theme or topic</label><input type="text" id="themeTopic" placeholder="e.g. Environment"></div>
+            <div class="form-group"><label>Class size</label><input type="number" id="classSize" placeholder="e.g. 40"></div>
+            <div class="form-group"><label>Group Members</label><input type="text" id="groupMembers" placeholder="Names separated by commas"></div>
+            <div class="form-group"><label>Class/Program & Date</label><input type="text" id="classDate" placeholder="e.g. English Education / 2024-10-24"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section id="step2" class="step-section">
+        <div class="card">
+          <h2>Step 2: Larsen-Freeman's Three Dimensions <span class="badge">15 min</span></h2>
+          <p class="text-muted" style="margin-bottom:16px; color:var(--text-muted)">Analyze your chosen structure across all four rows. Include a specific note on why Indonesian learners struggle with this structure.</p>
+          <table>
+            <thead><tr><th>Dimension</th><th>Your Analysis</th></tr></thead>
+            <tbody>
+              <tr><td><strong>FORM</strong><br><small>How is it constructed? Formula + 1 example.</small></td><td><textarea id="dimForm" placeholder="e.g. Subject + to be + past participle. Example: 'Forests are destroyed...'"></textarea></td></tr>
+              <tr><td><strong>MEANING</strong><br><small>What concept does it express? Semantic use?</small></td><td><textarea id="dimMeaning" placeholder="e.g. Action is emphasized over agent..."></textarea></td></tr>
+              <tr><td><strong>USE</strong><br><small>Contexts, registers, text types?</small></td><td><textarea id="dimUse" placeholder="e.g. Academic writing, news reports..."></textarea></td></tr>
+              <tr><td><strong>INDONESIAN LEARNER CHALLENGE</strong><br><small>L1 interference or transfer error?</small></td><td><textarea id="dimChallenge" placeholder="e.g. Bahasa Indonesia uses 'di-' with no obligatory 'to be'..."></textarea></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section id="step3" class="step-section">
+        <div class="card">
+          <h2>Step 3: PPP Lesson Design <span class="badge">30 min</span></h2>
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div style="padding:16px; background:var(--bg); border-radius:10px; margin-bottom:16px;">
+              <h3 style="margin-bottom:8px;">🟦 Presentation (10 min)</h3>
+              <div class="form-group"><label>Contextual Input (3-5 sentences/dialogue)</label><textarea id="ppp_context"></textarea></div>
+              <div class="form-group"><label>Grammar Rule (Derived from input)</label><textarea id="ppp_rule" style="min-height:60px;"></textarea></div>
+              <div class="form-group"><label>Concept-Checking Question (CCQ)</label><input type="text" id="ppp_ccq"></div>
+            </div>
+            <div style="padding:16px; background:var(--bg); border-radius:10px; margin-bottom:16px;">
+              <h3 style="margin-bottom:8px;">🟨 Practice (10 min) — Controlled</h3>
+              <div class="form-group"><label>Activity type & Instructions</label><textarea id="practice_info" placeholder="e.g. Gap-fill. Instructions: Complete each sentence..."></textarea></div>
+              <div class="form-group"><label>Task Items (1-5)</label>
+                <div class="task-input"><span>1.</span><input type="text" id="prac_1"></div>
+                <div class="task-input"><span>2.</span><input type="text" id="prac_2"></div>
+                <div class="task-input"><span>3.</span><input type="text" id="prac_3"></div>
+                <div class="task-input"><span>4.</span><input type="text" id="prac_4"></div>
+                <div class="task-input"><span>5.</span><input type="text" id="prac_5"></div>
+              </div>
+              <div class="form-group"><label>Answer Key</label><input type="text" id="prac_key"></div>
+            </div>
+            <div style="padding:16px; background:var(--bg); border-radius:10px;">
+              <h3 style="margin-bottom:8px;">🟩 Production (10 min) — Communicative</h3>
+              <div class="form-group"><label>Task & Instructions</label><textarea id="prod_task"></textarea></div>
+              <div class="form-group"><label>Useful Language Frame</label><textarea id="prod_frame" style="min-height:70px;"></textarea></div>
+              <div class="form-group"><label>Model Student Response</label><textarea id="prod_model" style="min-height:70px;"></textarea></div>
+              <div class="form-group"><label>Teaching Note for 40 Students</label><textarea id="prod_note" style="min-height:60px;"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4 -->
+      <section id="step4" class="step-section">
+        <div class="card">
+          <h2>Step 4: Three Activities (Pre-, Whilst-, Post-) <span class="badge">20 min</span></h2>
+          <p style="color:var(--text-muted); margin-bottom:16px;">Activity 1 (Controlled) • Activity 2 (Guided) • Activity 3 (Communicative)</p>
+          
+          <!-- Activity 1 -->
+          <div style="border-left: 4px solid var(--primary); padding-left: 16px; margin-bottom: 24px;">
+            <h3 style="margin-bottom:12px;">Activity 1: Controlled Focus</h3>
+            <div class="form-grid">
+              <div class="form-group"><label>Pre-Activity</label><textarea id="act1_pre"></textarea></div>
+              <div class="form-group"><label>Whilst-Activity</label><textarea id="act1_whilst"></textarea></div>
+              <div class="form-group"><label>Post-Activity</label><textarea id="act1_post"></textarea></div>
+            </div>
+            <label style="display:block; margin:12px 0 8px; font-weight:500;">Task Items (1-5)</label>
+            <div class="task-input"><span>1.</span><input type="text" id="act1_1"></div>
+            <div class="task-input"><span>2.</span><input type="text" id="act1_2"></div>
+            <div class="task-input"><span>3.</span><input type="text" id="act1_3"></div>
+            <div class="task-input"><span>4.</span><input type="text" id="act1_4"></div>
+            <div class="task-input"><span>5.</span><input type="text" id="act1_5"></div>
+            <div class="form-group" style="margin-top:8px;"><label>Answer Key</label><input type="text" id="act1_key"></div>
+          </div>
+
+          <!-- Activity 2 -->
+          <div style="border-left: 4px solid var(--warning); padding-left: 16px; margin-bottom: 24px;">
+            <h3 style="margin-bottom:12px;">Activity 2: Guided Focus</h3>
+            <div class="form-grid">
+              <div class="form-group"><label>Pre-Activity</label><textarea id="act2_pre"></textarea></div>
+              <div class="form-group"><label>Whilst-Activity</label><textarea id="act2_whilst"></textarea></div>
+              <div class="form-group"><label>Post-Activity</label><textarea id="act2_post"></textarea></div>
+            </div>
+            <label style="display:block; margin:12px 0 8px; font-weight:500;">Task Items (1-5)</label>
+            <div class="task-input"><span>1.</span><input type="text" id="act2_1"></div>
+            <div class="task-input"><span>2.</span><input type="text" id="act2_2"></div>
+            <div class="task-input"><span>3.</span><input type="text" id="act2_3"></div>
+            <div class="task-input"><span>4.</span><input type="text" id="act2_4"></div>
+            <div class="task-input"><span>5.</span><input type="text" id="act2_5"></div>
+            <div class="form-group" style="margin-top:8px;"><label>Answer Key</label><input type="text" id="act2_key"></div>
+          </div>
+
+          <!-- Activity 3 -->
+          <div style="border-left: 4px solid var(--success); padding-left: 16px;">
+            <h3 style="margin-bottom:12px;">Activity 3: Communicative Focus</h3>
+            <div class="form-grid">
+              <div class="form-group"><label>Pre-Activity</label><textarea id="act3_pre"></textarea></div>
+              <div class="form-group"><label>Whilst-Activity</label><textarea id="act3_whilst"></textarea></div>
+              <div class="form-group"><label>Post-Activity</label><textarea id="act3_post"></textarea></div>
+            </div>
+            <label style="display:block; margin:12px 0 8px; font-weight:500;">Task Items (1-5)</label>
+            <div class="task-input"><span>1.</span><input type="text" id="act3_1"></div>
+            <div class="task-input"><span>2.</span><input type="text" id="act3_2"></div>
+            <div class="task-input"><span>3.</span><input type="text" id="act3_3"></div>
+            <div class="task-input"><span>4.</span><input type="text" id="act3_4"></div>
+            <div class="task-input"><span>5.</span><input type="text" id="act3_5"></div>
+            <div class="form-group" style="margin-top:8px;"><label>Answer Key</label><input type="text" id="act3_key"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5 -->
+      <section id="step5" class="step-section">
+        <div class="card">
+          <h2>Step 5: Group Reflection <span class="badge">10 min</span></h2>
+          <p class="text-muted" style="margin-bottom:16px; color:var(--text-muted)">Answer all four questions as a group. Keep each answer brief (max ~35-40 words).</p>
+          
+          <div class="form-group">
+            <label>Q1 (LO1): What did the three-dimension analysis reveal that you would not have noticed by looking at the grammar rule alone? Reference one specific insight from Form, Meaning, or Use.</label>
+            <textarea id="ref1" oninput="countWords(this, 'c1')" maxlength="350"></textarea>
+            <div class="word-counter" id="c1">0 / 40 words</div>
+          </div>
+          <div class="form-group">
+            <label>Q2 (LO2): Which Indonesian-English difference is most likely to cause difficulty with your chosen structure, and how did that insight shape your materials?</label>
+            <textarea id="ref2" oninput="countWords(this, 'c2')" maxlength="350"></textarea>
+            <div class="word-counter" id="c2">0 / 40 words</div>
+          </div>
+          <div class="form-group">
+            <label>Q3 (LO3): How does your PPP sequence help learners move from noticing the structure to using it more independently?</label>
+            <textarea id="ref3" oninput="countWords(this, 'c3')" maxlength="350"></textarea>
+            <div class="word-counter" id="c3">0 / 40 words</div>
+          </div>
+          <div class="form-group">
+            <label>Q4 (LO4 & LO5): How do your pre-, whilst-, and post-activity stages balance accuracy support with meaningful communication?</label>
+            <textarea id="ref4" oninput="countWords(this, 'c4')" maxlength="350"></textarea>
+            <div class="word-counter" id="c4">0 / 40 words</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 6 -->
+      <section id="step6" class="step-section">
+        <div class="card">
+          <h2>Step 6: Group Sharing & Peer Feedback <span class="badge">5 min</span></h2>
+          <div class="form-grid">
+            <div class="form-group"><label>Feedback for Group</label><input type="text" id="fb_group_name" placeholder="Group name or ID"></div>
+            <div class="form-group"><label>Strength: 'This activity works because...'</label><textarea id="fb_strength" style="min-height:80px;"></textarea></div>
+          </div>
+          <div class="form-group"><label>Suggestion: 'To make it more practical for large classes, you could...'</label><textarea id="fb_suggestion" style="min-height:80px;"></textarea></div>
+          <hr style="margin: 20px 0; border-color: var(--border);">
+          <h3 style="margin-bottom: 12px;">Feedback Received (YOUR Activity 3)</h3>
+          <div class="form-group"><label>Note key points here:</label><textarea id="fb_received" placeholder="What did other groups say about your communicative task?"></textarea></div>
+        </div>
+      </section>
+
+      <!-- MODEL EXAMPLES SECTION -->
+      <section id="stepModel" class="step-section">
+        <div class="card">
+          <h2>📖 Model Examples <span class="model-tag">READ-ONLY</span></h2>
+          <p style="margin-bottom:16px; color:var(--text-muted)">These examples demonstrate high-quality responses based on the Passive Voice (SMA XI, B1, Environment). Use them as a benchmark for your own work.</p>
+          
+          <!-- Step 1 Model -->
+          <div class="model-card">
+            <h3>Step 1 Model: Structure & Context</h3>
+            <div class="model-content">
+              <p><strong>Grammar:</strong> Passive voice | <strong>Grade:</strong> SMA Grade XI | <strong>Level:</strong> B1</p>
+              <p><strong>Theme:</strong> Environment | <strong>Class Size:</strong> 40 students</p>
+            </div>
+          </div>
+
+          <!-- Step 2 Model -->
+          <div class="model-card">
+            <h3>Step 2 Model: Larsen-Freeman Analysis</h3>
+            <div class="model-content">
+              <table>
+                <tr><th>Dimension</th><th>Analysis</th></tr>
+                <tr><td><strong>FORM</strong></td><td>Subject + to be + past participle.<br><em>Example:</em> 'Forests in Kalimantan are destroyed by illegal logging.'</td></tr>
+                <tr><td><strong>MEANING</strong></td><td>The action is emphasized over the agent; the agent is unknown, unimportant, or deliberately omitted.</td></tr>
+                <tr><td><strong>USE</strong></td><td>Academic writing, news reports, scientific texts, formal announcements.</td></tr>
+                <tr><td><strong>CHALLENGE</strong></td><td>Bahasa Indonesia uses the <code>di-</code> prefix with no obligatory 'to be', so students tend to write 'Trees cut down' instead of 'Trees are cut down'.</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Step 3 Model -->
+          <div class="model-card">
+            <h3>Step 3 Model: PPP Design</h3>
+            <div class="model-content">
+              <p><strong>🟦 Presentation:</strong></p>
+              <p><em>Input:</em> 'Every year, millions of trees are cut down in Sumatra. Rare animals are forced out of their homes. New laws have been introduced by the government to stop illegal logging.'</p>
+              <p><em>Rule:</em> When the action matters more than the doer, use <strong>Subject + is/are + past participle</strong> (+ by + agent).</p>
+              <p><em>CCQ:</em> In "New laws have been introduced", who introduced the laws? Why don't we know?</p>
+              <hr style="margin:12px 0; border:0; border-top:1px dashed var(--border);">
+              <p><strong>🟨 Practice (Gap-fill):</strong></p>
+              <p>1. Millions of trees <strong>are cut down</strong> in Sumatra. | 2. National parks <strong>are protected</strong>. | 3. Waste <strong>is dumped</strong>. | 4. Solutions <strong>have been introduced</strong>. | 5. Orangutans <strong>are forced</strong> out.</p>
+              <hr style="margin:12px 0; border:0; border-top:1px dashed var(--border);">
+              <p><strong>🟩 Production:</strong></p>
+              <p><em>Task:</em> In pairs, describe an environmental problem using passive voice. (Current problem, cause, action).</p>
+              <p><em>Frame:</em> '[Place] is/are ___ by ___. One solution that has been ___ is ___.'</p>
+              <p><em>Note:</em> Display frame. Pairs share. Teacher notes 3-5 common errors for post-task feedback.</p>
+            </div>
+          </div>
+
+          <!-- Step 4 Model -->
+          <div class="model-card">
+            <h3>Step 4 Model: Activities (Controlled, Guided, Communicative)</h3>
+            <div class="model-content">
+              <p><strong>Activity 1: Controlled (Error Correction)</strong></p>
+              <p><em>PRE:</em> Vote on board: 'The report writes by manager' vs 'is written'. Why?</p>
+              <p><em>WHILST:</em> Correct: 1. bridge build → was built. 2. fabric are dye → is dyed. 3. school is build → is being built. 4. animals force → are forced. 5. pempek made → is made.</p>
+              <p><em>POST:</em> Peer check.</p>
+              <hr style="margin:12px 0; border:0; border-top:1px dashed var(--border);">
+              
+              <p><strong>Activity 2: Guided (Sentence Writing)</strong></p>
+              <p><em>PRE:</em> Photos of Batik, Pempek, Songket. Predict process.</p>
+              <p><em>WHILST:</em> Product → Process → Location: 1. Batik → dye by hand → Yogyakarta ('Batik cloth is dyed...'). 2. Pempek → make → Palembang. 3. Songket → weave → S. Sumatra. 4. Tempe → ferment → Java. 5. Wayang → carve → Java.</p>
+              <p><em>POST:</em> Partner checks form.</p>
+              <hr style="margin:12px 0; border:0; border-top:1px dashed var(--border);">
+              
+              <p><strong>Activity 3: Communicative (Information Gap)</strong></p>
+              <p><em>PRE:</em> Review frame. Brainstorm 5 products.</p>
+              <p><em>WHILST:</em> Student A/B gap. A asks 'How is songket made?' B answers. Exchange all 6 items, write 2 summary sentences.</p>
+              <p><em>POST:</em> Compare answers. Teacher board correction. Write 1 original sentence without frame.</p>
+            </div>
+          </div>
+
+          <!-- Step 5 Model -->
+          <div class="model-card">
+            <h3>Step 5 Model: Reflection</h3>
+            <div class="model-content">
+              <p><strong>Q1 (LO1):</strong> Analysis showed passive isn't just structural; learners miss why action, not doer, is foregrounded in formal texts.</p>
+              <p><strong>Q2 (LO2):</strong> Difficulty is the missing auxiliary. Because Indonesian lacks 'be' in passives, we built extra noticing/correction practice.</p>
+              <p><strong>Q3 (LO3):</strong> PPP moves from noticing in context → controlled practice → pair task where students use structure for real messages.</p>
+              <p><strong>Q4 (LO4/5):</strong> Pre-activity builds readiness, whilst-activity provides scaffolding, post-activity consolidates accuracy without interrupting communication flow.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="text-align: center; margin-top: 40px; padding-bottom: 40px;">
+        <button class="btn primary" style="font-size: 1.1rem; padding: 12px 32px;" onclick="saveData()">💾 Save Progress to Local Storage</button>
+        <p style="margin-top: 10px; color: var(--text-muted); font-size: 0.85rem;">Progress is auto-saved. Click to manually force sync.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Navigation Logic
+    const steps = document.querySelectorAll('.step-section');
+    const navItems = document.querySelectorAll('.nav-step');
+    
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const targetId = item.dataset.target;
+        steps.forEach(s => s.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+        
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        updateProgress();
+      });
+    });
+
+    // Checkbox Radio Logic for Step 1
+    const radioInputs = document.querySelectorAll('#grammarOptions input[type="radio"]');
+    radioInputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        document.querySelectorAll('#grammarOptions .checkbox-item').forEach(el => el.classList.remove('selected'));
+        e.target.closest('.checkbox-item').classList.add('selected');
+        document.getElementById('chosenGrammar').value = e.target.value;
+        updateProgress();
+      });
+    });
+
+    // Word Counter for Step 5
+    function countWords(el, counterId) {
+      const text = el.value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const counter = document.getElementById(counterId);
+      counter.textContent = `${words} / 40 words`;
+      counter.classList.toggle('over', words > 45);
+    }
+
+    // Save/Load Logic
+    const allInputs = document.querySelectorAll('input, textarea, select');
+    
+    function saveData() {
+      const data = {};
+      allInputs.forEach(el => {
+        if (el.name || el.id) {
+          if (el.type === 'radio') {
+            if (el.checked) data[el.name] = el.value;
+          } else if (el.type === 'checkbox') {
+            data[el.id || el.name] = el.checked;
+          } else {
+            data[el.id || el.name] = el.value;
+          }
+        }
+      });
+      localStorage.setItem('grammarProjectData', JSON.stringify(data));
+      
+      // Visual feedback
+      const btn = document.querySelector('.btn.primary');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '✅ Saved!';
+      setTimeout(() => btn.innerHTML = originalText, 2000);
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem('grammarProjectData');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      
+      allInputs.forEach(el => {
+        if (el.name || el.id) {
+          if (el.type === 'radio') {
+            if (data[el.name] === el.value) {
+              el.checked = true;
+              el.closest('.checkbox-item').classList.add('selected');
+            }
+          } else if (el.type === 'checkbox') {
+            el.checked = data[el.id] || data[el.name];
+          } else {
+            el.value = data[el.id] || data[el.name] || '';
+          }
+        }
+      });
+      updateProgress();
+    }
+
+    function clearData() {
+      if(confirm('Clear all progress? This cannot be undone.')) {
+        localStorage.removeItem('grammarProjectData');
+        allInputs.forEach(el => {
+          if(el.type === 'radio' || el.type === 'checkbox') el.checked = false;
+          else el.value = '';
+        });
+        document.querySelectorAll('#grammarOptions .checkbox-item').forEach(el => el.classList.remove('selected'));
+        location.reload();
+      }
+    }
+
+    // Progress Tracker
+    function updateProgress() {
+      const requiredFields = document.querySelectorAll('textarea, input:not([type="radio"]):not([type="checkbox"]), select');
+      let filled = 0;
+      requiredFields.forEach(f => {
+        if(f.value.trim() !== '') filled++;
+      });
+      // Add radio check
+      if(document.querySelector('#grammarOptions input:checked')) filled++;
+      
+      const percent = Math.min(100, Math.round((filled / 28) * 100));
+      document.getElementById('progressBar').style.width = `${percent}%`;
+    }
+
+    // Auto-save every 30 seconds
+    setInterval(saveData, 30000);
+    window.addEventListener('beforeunload', saveData);
+    
+    // Init
+    loadData();
+    allInputs.forEach(el => {
+      el.addEventListener('input', updateProgress);
+      el.addEventListener('change', updateProgress);
+    });
+  </script>
+</body>
+</html>
