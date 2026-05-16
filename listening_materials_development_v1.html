@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listening Materials Development Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f7fa; color: #2d3748; line-height: 1.6; }
+        .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+        .sidebar { background: linear-gradient(180deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 2rem 1.5rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+        .logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .logo-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .subtitle { font-size: 0.75rem; opacity: 0.9; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 1rem; }
+        .nav-menu { list-style: none; margin-bottom: 2rem; }
+        .nav-item { padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: white; color: #1e3a8a; font-weight: 600; }
+        .nav-item.completed { background: rgba(34, 197, 94, 0.3); border: 1px solid #22c55e; }
+        .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .progress-bar { margin-top: auto; padding: 1rem 0; border-top: 1px solid rgba(255,255,255,0.2); }
+        .progress-label { font-size: 0.8rem; margin-bottom: 0.5rem; }
+        .progress-track { height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #22c55e; border-radius: 4px; transition: width 0.3s ease; width: 0%; }
+        .main-content { padding: 2rem; overflow-y: auto; max-height: 100vh; }
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-size: 2rem; color: #1e3a8a; margin-bottom: 0.5rem; }
+        .header p { color: #64748b; }
+        .panel { display: none; animation: fadeIn 0.3s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card h3 { color: #1e3a8a; margin-bottom: 1rem; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: #4a5568; }
+        .form-group input, .form-group select, .form-group textarea { padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2563eb; }
+        .checkbox-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .checkbox-item { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        .checkbox-item input { accent-color: #2563eb; cursor: pointer; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-secondary { background: #f1f5f9; color: #475569; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-success:hover { background: #16a34a; transform: translateY(-1px); }
+        .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: flex-end; flex-wrap: wrap; }
+        .example-box { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 1.5rem; border-radius: 0 8px 8px 0; margin-top: 1.5rem; }
+        .example-title { font-weight: 700; color: #1e40af; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .info-card { background: #f8fafc; padding: 1rem; border-radius: 8px; border: 2px solid #e2e8f0; }
+        .info-card label { font-size: 0.8rem; color: #64748b; display: block; margin-bottom: 0.25rem; }
+        .info-card span { font-weight: 700; color: #1e3a8a; }
+        .rubric-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .rubric-table th, .rubric-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .rubric-table th { background: #f8fafc; font-weight: 700; color: #1e3a8a; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .status-indicator { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .status-pending { background: #94a3b8; }
+        .status-completed { background: #22c55e; }
+        .alert-box { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0; display: flex; align-items: start; gap: 0.75rem; }
+        .alert-box svg { flex-shrink: 0; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 12px; padding: 2rem; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; transition: color 0.2s; }
+        .modal-close:hover { color: #dc2626; }
+        .examples-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .ex-nav-btn { padding: 0.5rem 1rem; border: 2px solid #e2e8f0; background: white; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .ex-nav-btn:hover { border-color: #2563eb; color: #2563eb; }
+        .ex-nav-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .ex-content { display: none; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0; }
+        .ex-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .preview-stage { background: white; padding: 1.5rem; border-radius: 8px; border: 2px solid #e2e8f0; margin-bottom: 1rem; }
+        .preview-stage h4 { color: #1e3a8a; margin-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+        @media (max-width: 1024px) { .app { grid-template-columns: 1fr; } .sidebar { position: relative; height: auto; padding: 1rem; } .nav-menu { display: flex; gap: 0.5rem; overflow-x: auto; } .nav-item { white-space: nowrap; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="logo"><div class="logo-icon">🎧</div> Listening Materials</div>
+        <div class="subtitle">Development Project Dashboard</div>
+        <ul class="nav-menu">
+            <li class="nav-item active" data-step="overview"><span class="nav-icon">📊</span> Overview</li>
+            <li class="nav-item" data-step="step1"><span class="nav-icon">1</span> Context & Text</li>
+            <li class="nav-item" data-step="step2"><span class="nav-icon">2</span> Pre-Activity</li>
+            <li class="nav-item" data-step="step3"><span class="nav-icon">3</span> While-Activity</li>
+            <li class="nav-item" data-step="step4"><span class="nav-icon">4</span> Post-Activity</li>
+            <li class="nav-item" data-step="examples"><span class="nav-icon">📚</span> Examples Gallery</li>
+            <li class="nav-item" data-step="rubric"><span class="nav-icon">📋</span> Rubric</li>
+        </ul>
+        <div class="progress-bar">
+            <div class="progress-label">Progress: <span id="progress-text">0%</span></div>
+            <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <section id="overview-panel" class="panel active">
+            <div class="header"><h1>Listening Materials Development Project</h1><p>Design a complete listening material for Indonesian school learners</p></div>
+            <div class="card">
+                <h3>📖 Project Overview</h3>
+                <p>This take-home group project asks you to design a complete listening material for Indonesian school learners. Your product must connect a target listening sub-skill, learner challenge, school level, classroom context, and three-stage activity sequence.</p>
+                <div class="info-grid" style="margin-top: 1.5rem;">
+                    <div class="info-card"><label>Duration</label><span>90 Minutes</span></div>
+                    <div class="info-card"><label>Group Size</label><span>4-5 Students</span></div>
+                    <div class="info-card"><label>School Levels</label><span>SD / SMP / SMA</span></div>
+                    <div class="info-card"><label>Proficiency</label><span>A1-A2 Beginner / B1 Intermediate</span></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📋 Task Overview Matrix</h3>
+                <table class="rubric-table">
+                    <thead><tr><th>Step</th><th>Task</th><th>Weight</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Step 1</strong></td><td>Choose Listening Text and Context</td><td><span class="badge badge-blue">10%</span></td><td><span class="status-indicator status-pending"></span></td></tr>
+                        <tr><td><strong>Step 2</strong></td><td>Design Pre-Activity</td><td><span class="badge badge-blue">25%</span></td><td><span class="status-indicator status-pending"></span></td></tr>
+                        <tr><td><strong>Step 3</strong></td><td>Design While-Activity</td><td><span class="badge badge-yellow">40%</span></td><td><span class="status-indicator status-pending"></span></td></tr>
+                        <tr><td><strong>Step 4</strong></td><td>Design Post-Activity & Revision</td><td><span class="badge badge-green">25%</span></td><td><span class="status-indicator status-pending"></span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="step1-panel" class="panel">
+            <div class="header"><h1>Step 1: Choose Your Listening Text and Context</h1><p>Select a short listening text suitable for your target learners (15 minutes)</p></div>
+            <div class="alert-box"><svg width="20" height="20" fill="#b45309" viewBox="0 0 20 20"><path d="M10 0a10 10 0 110 20 10 10 0 010-20zm1 15v-2H9v2h2zm0-4v-4H9v4h2z"/></svg><div><strong>Important:</strong> Select a short listening text that supports both gist and selected-detail tasks. It may be teacher-provided, adapted, teacher-created, or semi-authentic.</div></div>
+            <div class="card">
+                <h3>📝 Context Information</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>School Level / Grade</label><select id="school-level"><option value="">Select level...</option><option value="SD">SD (Elementary)</option><option value="SMP">SMP (Junior High)</option><option value="SMA">SMA (Senior High)</option></select></div>
+                    <div class="form-group"><label>Class Size</label><input type="number" id="class-size" placeholder="e.g., 30 students" min="1" max="50"></div>
+                    <div class="form-group"><label>Proficiency Level</label><select id="proficiency-level"><option value="">Select level...</option><option value="A1-A2">A1-A2 Beginner</option><option value="B1">B1 Intermediate</option></select></div>
+                    <div class="form-group"><label>Topic</label><select id="topic"><option value="">Select topic...</option><option value="Daily routines">Daily routines</option><option value="Tourism">Tourism</option><option value="Traditional foods">Traditional foods</option><option value="School life">School life</option><option value="Environment">Environment</option></select></div>
+                    <div class="form-group"><label>Text Type</label><input type="text" id="text-type" placeholder="e.g., Short interview, Conversation, Monologue"></div>
+                    <div class="form-group"><label>Title/Source or Short Description</label><input type="text" id="audio-title" placeholder="e.g., A student talks about pempek"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>🎯 Sub-skill & Challenge</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Target Listening Sub-skill</label><input type="text" id="sub-skill" placeholder="e.g., Gist and selected-detail comprehension"></div>
+                    <div class="form-group"><label>Main Listening Challenge</label><textarea id="challenge" placeholder="e.g., Students may miss descriptive details because of natural speech rate and connected speech..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Classroom Constraint / Support Needed</label><textarea id="constraint" placeholder="e.g., The class is large and uses one speaker only. Students need pair checking before whole-class feedback..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Material Decision</label><div class="checkbox-group"><label class="checkbox-item"><input type="radio" name="material-decision" value="as-is"> Use as is</label><label class="checkbox-item"><input type="radio" name="material-decision" value="adapt"> Adapt</label><label class="checkbox-item"><input type="radio" name="material-decision" value="created"> Teacher-created</label><label class="checkbox-item"><input type="radio" name="material-decision" value="semi"> Semi-authentic</label></div></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Reason for Decision</label><textarea id="reason-decision" placeholder="e.g., The topic is familiar and culturally relevant for Indonesian students..."></textarea></div>
+                </div>
+                <div class="btn-group"><button class="btn btn-primary" onclick="saveStep(1)">Save Step 1</button></div>
+            </div>
+        </section>
+
+        <section id="step2-panel" class="panel">
+            <div class="header"><h1>Step 2: Design Your Pre-Activity</h1><p>Prepare students to listen successfully (10-15 minutes)</p></div>
+            <div class="alert-box"><svg width="20" height="20" fill="#b45309" viewBox="0 0 20 20"><path d="M10 0a10 10 0 110 20 10 10 0 010-20zm1 15v-2H9v2h2zm0-4v-4H9v4h2z"/></svg><div><strong>Important:</strong> Prepare students without giving away all content. Introduce 3-4 essential words/clues and set a clear listening purpose.</div></div>
+            <div class="card">
+                <h3>🎤 Pre-listening Focus</h3>
+                <div class="form-grid">
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Pre-listening Focus Statement</label><textarea id="pre-focus" placeholder="e.g., Preparing students to understand key descriptive details in a short interview about pempek."></textarea></div>
+                    <div class="form-group"><label>Key Words/Clues (3-4 only)</label><input type="text" id="keywords" placeholder="e.g., ingredients, savory, famous for, spicy"></div>
+                    <div class="form-group"><label>Learner Challenge Supported</label><textarea id="pre-challenge" placeholder="e.g., Students may miss descriptive details because some key words are unfamiliar..."></textarea></div>
+                    <div class="form-group"><label>Presentation Method</label><textarea id="presentation-method" placeholder="e.g., Show one photo of pempek and one photo of cuko sauce..."></textarea></div>
+                    <div class="form-group"><label>Check Question</label><input type="text" id="check-question" placeholder="e.g., If a food is well known in many places, what phrase can we use?"></div>
+                    <div class="form-group"><label>Answer</label><input type="text" id="check-answer" placeholder="e.g., Famous for"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Student-facing Instructions</label><textarea id="pre-instructions" placeholder="Look at the picture..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Worked Model</label><textarea id="pre-model" placeholder="e.g., Pempek is famous for its cuko sauce..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Brief Rationale</label><textarea id="pre-rationale" placeholder="e.g., This activity prepares students with only the most important words and clues..."></textarea></div>
+                </div>
+                <div class="btn-group"><button class="btn btn-primary" onclick="saveStep(2)">Save Step 2</button></div>
+            </div>
+        </section>
+
+        <section id="step3-panel" class="panel">
+            <div class="header"><h1>Step 3: Design Your While-Activity</h1><p>Gist + Detail Listening Tasks (25 minutes)</p></div>
+            <div class="alert-box"><svg width="20" height="20" fill="#b45309" viewBox="0 0 20 20"><path d="M10 0a10 10 0 110 20 10 10 0 010-20zm1 15v-2H9v2h2zm0-4v-4H9v4h2z"/></svg><div><strong>Important:</strong> Design two tasks using the same listening text. Activity A focuses on gist. Activity B focuses on 3-4 selected details.</div></div>
+            <div class="card">
+                <h3>🔍 Activity A: Gist Listening</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Activity Type</label><div class="checkbox-group"><label class="checkbox-item"><input type="checkbox" name="gist-type" value="main-idea"> Main idea</label><label class="checkbox-item"><input type="checkbox" name="gist-type" value="topic-identification"> Topic identification</label><label class="checkbox-item"><input type="checkbox" name="gist-type" value="speaker-purpose"> Speaker purpose</label></div></div>
+                    <div class="form-group"><label>Listening Purpose</label><input type="text" id="gist-purpose" placeholder="e.g., Students listen to identify the main topic and the speaker's general reason..."></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Student-facing Instructions</label><textarea id="gist-instructions" placeholder="Listen once. Do not worry if you do not understand every word..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Task Items (1-2)</label><textarea id="gist-items" placeholder="1. What food is the speaker talking about?&#10;a. Rendang b. Pempek c. Soto"></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Answer Key</label><textarea id="gist-answers" placeholder="1. b. Pempek"></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Brief Rationale</label><textarea id="gist-rationale" placeholder="This task helps students understand the topic and general purpose..."></textarea></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📝 Activity B: Selected Detail Listening</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Activity Type</label><div class="checkbox-group"><label class="checkbox-item"><input type="checkbox" name="detail-type" value="chart"> Chart completion</label><label class="checkbox-item"><input type="checkbox" name="detail-type" value="gap-fill"> Gap-fill</label><label class="checkbox-item"><input type="checkbox" name="detail-type" value="tf"> True/False</label><label class="checkbox-item"><input type="checkbox" name="detail-type" value="matching"> Matching</label><label class="checkbox-item"><input type="checkbox" name="detail-type" value="sequencing"> Sequencing</label></div></div>
+                    <div class="form-group"><label>Listening Purpose</label><input type="text" id="detail-purpose" placeholder="e.g., Students listen again to identify specific information..."></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Student-facing Instructions</label><textarea id="detail-instructions" placeholder="Listen again. Complete the details below with short answers only..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Task Items (3-4)</label><textarea id="detail-items" placeholder="1. Food name: &#10;2. Place of origin: &#10;3. Two ingredients: &#10;4. One reason the speaker recommends it:"></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Answer Key</label><textarea id="detail-answers" placeholder="1. Food name: Pempek"></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Large-class/Limited-resource Note</label><textarea id="detail-note" placeholder="After the second listening, students compare their answers in pairs before whole-class checking..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Brief Rationale</label><textarea id="detail-rationale" placeholder="This task helps students focus on selected details after they already know the topic..."></textarea></div>
+                </div>
+                <div class="btn-group"><button class="btn btn-primary" onclick="saveStep(3)">Save Step 3</button></div>
+            </div>
+        </section>
+
+        <section id="step4-panel" class="panel">
+            <div class="header"><h1>Step 4: Design Your Post-Activity and Revision</h1><p>Extend learning beyond answer checking (15 minutes)</p></div>
+            <div class="alert-box"><svg width="20" height="20" fill="#b45309" viewBox="0 0 20 20"><path d="M10 0a10 10 0 110 20 10 10 0 010-20zm1 15v-2H9v2h2zm0-4v-4H9v4h2z"/></svg><div><strong>Important:</strong> Design one short follow-up task that asks students to reuse ideas or useful language from the listening. Add one revision note based on likely classroom response.</div></div>
+            <div class="card">
+                <h3>🔄 Post-Activity Design</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Post-activity Type</label><div class="checkbox-group"><label class="checkbox-item"><input type="radio" name="post-type" value="discussion"> Short discussion</label><label class="checkbox-item"><input type="radio" name="post-type" value="speaking"> Speaking response</label><label class="checkbox-item"><input type="radio" name="post-type" value="writing"> Guided writing</label><label class="checkbox-item"><input type="radio" name="post-type" value="language"> Language focus</label><label class="checkbox-item"><input type="radio" name="post-type" value="pronunciation"> Pronunciation noticing</label></div></div>
+                    <div class="form-group"><label>Post-listening Purpose</label><input type="text" id="post-purpose" placeholder="e.g., Students use ideas and expressions from the listening text to describe..."></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Student-facing Instructions</label><textarea id="post-instructions" placeholder="Work in pairs. Choose one local food from your town..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>One Worked Model</label><textarea id="post-model" placeholder="e.g., Burgo is famous in Palembang. It is soft and savory..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Revision After Classroom Use</label><textarea id="post-revision" placeholder="If students understand the main idea but miss important details, shorten the detail task..."></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Brief Rationale</label><textarea id="post-rationale" placeholder="This activity extends the listening lesson into meaningful speaking practice..."></textarea></div>
+                </div>
+                <div class="btn-group"><button class="btn btn-secondary" onclick="previewProject()">Preview Worksheet</button><button class="btn btn-success" onclick="exportProject()">Export to PDF</button></div>
+            </div>
+        </section>
+
+        <section id="examples-panel" class="panel">
+            <div class="header"><h1>📚 Examples Gallery</h1><p>Reference models for each project step</p></div>
+            <div class="card">
+                <h3>Step-by-Step Examples</h3>
+                <div class="examples-nav">
+                    <button class="ex-nav-btn active" onclick="showEx(1)">Step 1 Example</button>
+                    <button class="ex-nav-btn" onclick="showEx(2)">Step 2 Example</button>
+                    <button class="ex-nav-btn" onclick="showEx(3)">Step 3 Example</button>
+                    <button class="ex-nav-btn" onclick="showEx(4)">Step 4 Example</button>
+                </div>
+                
+                <div id="ex-step1" class="ex-content active">
+                    <div class="example-title">💡 Example: Step 1 (SMP Grade VIII)</div>
+                    <p><strong>School level/grade:</strong> SMP Grade VIII</p>
+                    <p><strong>Proficiency level:</strong> A2-B1</p>
+                    <p><strong>Topic:</strong> Indonesian traditional foods</p>
+                    <p><strong>Text type:</strong> Short interview</p>
+                    <p><strong>Title/short description of audio:</strong> A student talks about pempek.</p>
+                    <p><strong>Target listening sub-skill:</strong> Gist and selected-detail comprehension</p>
+                    <p><strong>Main listening challenge:</strong> Students may already know the food, but they may miss descriptive details such as ingredients, place of origin, and reasons for recommendation because of natural speech rate and connected speech.</p>
+                    <p><strong>Classroom constraint/ support needed:</strong> The class is large and uses one speaker only. Students need pair checking before whole-class feedback so that more students can compare and confirm their answers.</p>
+                    <p><strong>Material decision:</strong> Semi-authentic/ teacher-created</p>
+                    <p><strong>Reason for decision:</strong> The topic is familiar and culturally relevant for Indonesian students, while the short interview format provides realistic spoken input that can support both gist listening and selected-detail listening.</p>
+                </div>
+                <div id="ex-step2" class="ex-content">
+                    <div class="example-title">💡 Example: Step 2</div>
+                    <p><strong>Pre-listening focus:</strong> Preparing students to understand key descriptive details in a short interview about pempek.</p>
+                    <p><strong>Key words/ clues:</strong> ingredients, savory, famous for, spicy</p>
+                    <p><strong>Learner challenge supported:</strong> Students may miss descriptive details because some key words are unfamiliar or difficult to recognize in natural speech.</p>
+                    <p><strong>Presentation method:</strong> Show one photo of pempek and one photo of cuko sauce. Briefly introduce the four key words using the pictures and simple examples.</p>
+                    <p><strong>Check question:</strong> If a food is well known in many places, what phrase can we use?</p>
+                    <p><strong>Answer:</strong> Famous for</p>
+                    <p><strong>Student-facing instructions:</strong> Look at the picture of pempek. What do you already know about this food? Match the four words with their meanings: ingredients, savory, famous for, and spicy. Then predict two details the speaker may mention.</p>
+                    <p><strong>Worked model:</strong> Pempek is famous for its cuko sauce. The speaker may mention its ingredients and its taste.</p>
+                    <p><strong>Brief rationale:</strong> This activity prepares students with only the most important words and clues. It helps them predict the content without giving away all the information from the listening text.</p>
+                </div>
+                <div id="ex-step3" class="ex-content">
+                    <div class="example-title">💡 Example: Step 3</div>
+                    <p><strong>Activity A (Gist):</strong> Activity type: Gist listening. Purpose: Identify main topic and general reason. Items: 1. What food? (b. Pempek) 2. Why like it? (b. Savory & reminds of family meals). Rationale: Reduces pressure, catches main idea first.</p>
+                    <p><strong>Activity B (Detail):</strong> Activity type: Selected-detail listening. Purpose: Identify specific info after understanding topic. Items: 1. Food name (Pempek) 2. Origin (Palembang) 3. Ingredients (Fish, tapioca) 4. Reason (Tasty & famous). Large-class note: Pair check before whole-class feedback.</p>
+                </div>
+                <div id="ex-step4" class="ex-content">
+                    <div class="example-title">💡 Example: Step 4</div>
+                    <p><strong>Post-activity type:</strong> Short speaking response</p>
+                    <p><strong>Post-listening purpose:</strong> Students use ideas and expressions from the listening text to describe a local food from their own area.</p>
+                    <p><strong>Student-facing instructions:</strong> Work in pairs. Choose one local food from your town. Describe it in two or three sentences. Use at least one expression from the listening, such as famous for, savory, spicy, or made from.</p>
+                    <p><strong>Worked model:</strong> Burgo is famous in Palembang. It is soft and savory, and people often eat it for breakfast.</p>
+                    <p><strong>Revision after classroom use:</strong> If students understand the main idea but miss important details, shorten the detail task or replay only the relevant section of the audio in the next use of the material.</p>
+                    <p><strong>Brief rationale:</strong> Extends listening into meaningful speaking practice while connecting to local context.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="rubric-panel" class="panel">
+            <div class="header"><h1>Marking Criteria</h1><p>Assessment rubric for the Listening Materials Development Project</p></div>
+            <div class="card">
+                <table class="rubric-table">
+                    <thead><tr><th>Step</th><th>Component</th><th>What We Are Looking For</th><th>Marks</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>1</strong></td><td>Listening Text and Context</td><td>Fits stated school level, proficiency, sub-skill, challenge, and Indonesian EFL context.</td><td><span class="badge badge-blue">10%</span></td></tr>
+                        <tr><td><strong>2</strong></td><td>Pre-Activity</td><td>Prepares without over-teaching; selective key words; clear instructions, model, and support.</td><td><span class="badge badge-blue">25%</span></td></tr>
+                        <tr><td><strong>3</strong></td><td>While-Activity</td><td>Gist + detail tasks realistic, sequenced, answer keys, manageable for class size.</td><td><span class="badge badge-yellow">40%</span></td></tr>
+                        <tr><td><strong>4</strong></td><td>Post-Activity and Revision</td><td>Follow-up extends learning; revision note shows reflective development.</td><td><span class="badge badge-green">25%</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div id="preview-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Project Preview</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="preview-content"></div>
+    </div>
+</div>
+
+<div id="pdf-container" style="position: absolute; left: -9999px; padding: 20px; background: white; width: 800px; font-family: sans-serif;"></div>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const step = item.dataset.step;
+        activatePanel(step);
+    });
+});
+
+function activatePanel(step) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`${step}-panel`).classList.add('active');
+    document.querySelector(`[data-step="${step}"]`).classList.add('active');
+}
+
+function showEx(stepNum) {
+    document.querySelectorAll('.ex-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.ex-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`ex-step${stepNum}`).classList.add('active');
+    document.querySelectorAll('.ex-nav-btn')[stepNum-1].classList.add('active');
+}
+
+let stepsCompleted = {};
+function saveStep(stepNum) {
+    stepsCompleted[stepNum] = true;
+    updateProgress();
+    alert(`Step ${stepNum} saved successfully!`);
+    const navItems = document.querySelectorAll('.nav-item');
+    if (stepNum >= 1 && stepNum <= 4) { navItems[stepNum].classList.add('completed'); }
+}
+
+function updateProgress() {
+    const total = 4;
+    const completed = Object.keys(stepsCompleted).length;
+    const percentage = Math.round((completed / total) * 100);
+    document.getElementById('progress-fill').style.width = `${percentage}%`;
+    document.getElementById('progress-text').textContent = `${percentage}%`;
+    document.querySelectorAll('.rubric-table tbody .status-indicator').forEach((indicator, index) => {
+        if (index < 4 && stepsCompleted[index + 1]) {
+            indicator.classList.remove('status-pending');
+            indicator.classList.add('status-completed');
+        }
+    });
+}
+
+function previewProject() {
+    const data = collectData();
+    document.getElementById('preview-content').innerHTML = `
+        <div class="preview-stage"><h4>📝 Step 1: Context & Text</h4><p><strong>School Level:</strong> ${data.schoolLevel||'-'}</p><p><strong>Topic:</strong> ${data.topic||'-'}</p><p><strong>Sub-skill:</strong> ${data.subSkill||'-'}</p></div>
+        <div class="preview-stage"><h4>🎤 Step 2: Pre-Activity</h4><p><strong>Focus:</strong> ${data.preFocus||'-'}</p><p><strong>Key Words:</strong> ${data.keywords||'-'}</p></div>
+        <div class="preview-stage"><h4>🔍 Step 3: While-Activity</h4><p><strong>Gist Purpose:</strong> ${data.gistPurpose||'-'}</p><p><strong>Detail Purpose:</strong> ${data.detailPurpose||'-'}</p></div>
+        <div class="preview-stage"><h4>🔄 Step 4: Post-Activity</h4><p><strong>Purpose:</strong> ${data.postPurpose||'-'}</p><p><strong>Revision:</strong> ${data.postRevision||'-'}</p></div>
+    `;
+    document.getElementById('preview-modal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('preview-modal').classList.remove('active'); }
+
+function collectData() {
+    return {
+        schoolLevel: document.getElementById('school-level').value,
+        classSize: document.getElementById('class-size').value,
+        proficiency: document.getElementById('proficiency-level').value,
+        topic: document.getElementById('topic').value,
+        textType: document.getElementById('text-type').value,
+        subSkill: document.getElementById('sub-skill').value,
+        challenge: document.getElementById('challenge').value,
+        preFocus: document.getElementById('pre-focus').value,
+        keywords: document.getElementById('keywords').value,
+        gistPurpose: document.getElementById('gist-purpose').value,
+        detailPurpose: document.getElementById('detail-purpose').value,
+        postPurpose: document.getElementById('post-purpose').value,
+        postRevision: document.getElementById('post-revision').value
+    };
+}
+
+function exportProject() {
+    const data = collectData();
+    const htmlContent = `
+        <h1 style="color:#1e3a8a; margin-bottom:10px;">Listening Materials Development Project</h1>
+        <div style="margin-bottom:20px;">
+            <h3 style="color:#2563eb;">Step 1: Context & Text</h3>
+            <p><b>School Level:</b> ${data.schoolLevel||'-'}</p>
+            <p><b>Topic:</b> ${data.topic||'-'}</p>
+            <p><b>Sub-skill:</b> ${data.subSkill||'-'}</p>
+            <p><b>Challenge:</b> ${data.challenge||'-'}</p>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h3 style="color:#2563eb;">Step 2: Pre-Activity</h3>
+            <p><b>Focus:</b> ${data.preFocus||'-'}</p>
+            <p><b>Key Words:</b> ${data.keywords||'-'}</p>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h3 style="color:#2563eb;">Step 3: While-Activity</h3>
+            <p><b>Gist Purpose:</b> ${data.gistPurpose||'-'}</p>
+            <p><b>Detail Purpose:</b> ${data.detailPurpose||'-'}</p>
+        </div>
+        <div style="margin-bottom:20px;">
+            <h3 style="color:#2563eb;">Step 4: Post-Activity & Revision</h3>
+            <p><b>Purpose:</b> ${data.postPurpose||'-'}</p>
+            <p><b>Revision Note:</b> ${data.postRevision||'-'}</p>
+        </div>
+    `;
+    
+    const container = document.getElementById('pdf-container');
+    container.innerHTML = htmlContent;
+    
+    const opt = {
+        margin: 10,
+        filename: 'listening-materials-project.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(container).save().then(() => {
+        container.innerHTML = '';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => { activatePanel('overview'); });
+</script>
+</body>
+</html>
