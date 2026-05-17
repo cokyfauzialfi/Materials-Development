@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speaking Materials Development Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f1f5f9;
+      --bg-card: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #dbeafe;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 6px -1px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --radius: 10px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-main); line-height: 1.5; height: 100vh; overflow: hidden; }
+    
+    /* Layout */
+    .dashboard { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
+    .sidebar { background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 16px; overflow-y: auto; }
+    .main-area { display: flex; flex-direction: column; overflow: hidden; }
+    .top-bar { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .content-scroll { flex: 1; overflow-y: auto; padding: 24px; }
+    
+    /* Sidebar */
+    .logo { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 32px; display: flex; align-items: center; gap: 10px; }
+    .logo svg { width: 24px; height: 24px; }
+    .nav-group { margin-bottom: 20px; }
+    .nav-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; padding-left: 12px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: var(--transition); font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .nav-item:hover { background: var(--primary-light); color: var(--primary); }
+    .nav-item.active { background: var(--primary); color: #fff; }
+    .nav-item.active svg { color: #fff; }
+    .nav-item svg { width: 18px; height: 18px; color: var(--text-muted); transition: var(--transition); }
+    
+    /* Top Bar */
+    .project-title { font-size: 18px; font-weight: 600; }
+    .progress-container { display: flex; align-items: center; gap: 12px; }
+    .progress-bar { width: 200px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s ease; }
+    .progress-text { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    
+    /* Panels */
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Cards & Forms */
+    .card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px; border: 1px solid var(--border); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .card-title { font-size: 16px; font-weight: 600; color: var(--text-main); }
+    .badge { font-size: 11px; padding: 4px 8px; border-radius: 12px; background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media(min-width: 768px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    .form-group { margin-bottom: 0; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px; background: #fafafa; transition: var(--transition); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    textarea { min-height: 100px; resize: vertical; }
+    
+    .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-outline:hover { background: #f8fafc; color: var(--text-main); border-color: #cbd5e1; }
+    
+    .example-box { background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 16px; margin-top: 12px; font-size: 13px; color: var(--text-muted); display: none; }
+    .example-box.show { display: block; animation: fadeIn 0.2s ease; }
+    
+    .table-wrapper { overflow-x: auto; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: #f8fafc; font-weight: 600; color: var(--text-muted); }
+    
+    .checklist { list-style: none; }
+    .checklist li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    .checklist li:last-child { border-bottom: none; }
+    .check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+    .check-box.checked { background: var(--success); border-color: var(--success); color: #fff; }
+    
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: var(--transition); z-index: 100; }
+    .modal.show { opacity: 1; pointer-events: all; }
+    .modal-content { background: #fff; padding: 32px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); transform: scale(0.95); transition: var(--transition); }
+    .modal.show .modal-content { transform: scale(1); }
+    .modal-icon { width: 60px; height: 60px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--success); font-size: 24px; }
+    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .modal-text { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+  <aside class="sidebar">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.868 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+      ELT Dashboard
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Project Steps</div>
+      <div class="nav-item active" data-target="overview" onclick="switchTab('overview', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+        Overview & Objectives
+      </div>
+      <div class="nav-item" data-target="step1" onclick="switchTab('step1', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+        Step 1: Context & Target
+      </div>
+      <div class="nav-item" data-target="step2" onclick="switchTab('step2', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
+        Step 2: Pre-Activity
+      </div>
+      <div class="nav-item" data-target="step3" onclick="switchTab('step3', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
+        Step 3: While-Activities
+      </div>
+      <div class="nav-item" data-target="step4" onclick="switchTab('step4', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
+        Step 4: Post-Tool & Revision
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Reference</div>
+      <div class="nav-item" data-target="examples" onclick="switchTab('examples', this)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.868 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+        Examples
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="top-bar">
+      <div class="project-title">Speaking Materials Development</div>
+      <div class="progress-container">
+        <div class="progress-bar"><div class="progress-fill" id="globalProgress"></div></div>
+        <div class="progress-text" id="progressText">0% Complete</div>
+        <button class="btn btn-outline" onclick="showExportModal()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Export</button>
+      </div>
+    </header>
+
+    <div class="content-scroll">
+      <!-- OVERVIEW -->
+      <div id="overview" class="panel active">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Project Overview</h2><span class="badge">90 min | Group 4-5</span></div>
+          <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">Design a complete speaking material for Indonesian school learners. Connect target components, challenges, context, and a three-stage sequence.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div style="background: #eff6ff; padding: 16px; border-radius: 8px;"><strong style="color: #2563eb; font-size: 14px;">LO 1-3</strong><p style="font-size: 13px; color: var(--text-muted);">Identify components, design 3 stages, address challenges</p></div>
+            <div style="background: #ecfdf5; padding: 16px; border-radius: 8px;"><strong style="color: #059669; font-size: 14px;">Time Allocation</strong><p style="font-size: 13px; color: var(--text-muted);">Pre: 15m | While: 35m | Post: 20m | Context: 15m</p></div>
+            <div style="background: #faf5ff; padding: 16px; border-radius: 8px;"><strong style="color: #9333ea; font-size: 14px;">Output</strong><p style="font-size: 13px; color: var(--text-muted);">Worksheet, role cards, prompts, support language, evaluation tool</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Marking Criteria</h2></div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Step</th><th>Component</th><th>Marks</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Context, task type, challenge alignment</td><td>10%</td></tr>
+                <tr><td>2</td><td>Preparation, useful language, clear model</td><td>25%</td></tr>
+                <tr><td>3</td><td>Guided & freer tasks, STT maximization</td><td>40%</td></tr>
+                <tr><td>4</td><td>Feedback tool, reflection, revision note</td><td>25%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div id="step1" class="panel">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Step 1: Context & Target Component</h2><span class="badge">15 min</span></div>
+          <button class="btn btn-outline" onclick="toggleExample('ex1')">👁 Show/Hide Example</button>
+          <div id="ex1" class="example-box">
+            <strong>Example:</strong> SMP Grade VIII | A1-A2 | Giving directions around school | Information gap & role play | Target: Linguistic resources & interaction | Challenge: Lack of English direction phrases & confidence | Decision: Teacher-created adapted maps to make it realistic for large class.
+          </div>
+          <div class="form-grid" style="margin-top: 16px;">
+            <div class="form-group"><label>School Level / Grade</label><input type="text" id="s1_level" placeholder="e.g., SMP Grade VIII" oninput="updateProgress()"></div>
+            <div class="form-group"><label>Proficiency Level</label><select id="s1_prof" onchange="updateProgress()"><option value="">Select...</option><option>A1-A2 Beginner</option><option>B1 Intermediate</option></select></div>
+            <div class="form-group"><label>Topic & Task Type</label><input type="text" id="s1_topic" placeholder="e.g., Daily routines - Role play" oninput="updateProgress()"></div>
+            <div class="form-group"><label>Class Size</label><input type="number" id="s1_class" placeholder="e.g., 32" oninput="updateProgress()"></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Target Speaking Component</label><textarea id="s1_target" placeholder="Linguistic resources, interaction skills, strategic competence..." oninput="updateProgress()"></textarea></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Main Speaking Challenge</label><textarea id="s1_challenge" placeholder="What specifically hinders their speaking in this context?" oninput="updateProgress()"></textarea></div>
+            <div class="form-group"><label>Material Decision</label><select id="s1_mat" onchange="updateProgress()"><option value="">Select...</option><option>Use as is</option><option>Adapt</option><option>Teacher-created</option><option>Semi-authentic</option></select></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Classroom Constraint / Reason for Decision</label><textarea id="s1_reason" placeholder="Large class? Limited tech? Why this choice works here..." oninput="updateProgress()"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step2" class="panel">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Step 2: Pre-Speaking Activity</h2><span class="badge">20 min</span></div>
+          <button class="btn btn-outline" onclick="toggleExample('ex2')">👁 Show/Hide Example</button>
+          <div id="ex2" class="example-box">
+            <strong>Pre-speaking focus:</strong> Preparing to ask/give directions. <br>
+            <strong>Expressions:</strong> 1. Excuse me, where is...? 2. Go straight. 3. Turn left. <br>
+            <strong>Model:</strong> Student A asks where library is. B: It's next to the hall.
+          </div>
+          <div style="margin-top: 16px;">
+            <label>Useful Words/Expressions (3-5 items)</label>
+            <textarea id="s2_expr" placeholder="List key phrases here..." style="min-height: 80px;" oninput="updateProgress()"></textarea>
+            
+            <label style="margin-top: 12px;">Presentation Method & Check Question/Model</label>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th style="width: 30%">Word/Expression</th><th style="width: 30%">Learner Challenge Supported</th><th style="width: 40%">How Presented / Check Question</th></tr></thead>
+                <tbody>
+                  <tr><td><input type="text" class="s2-input" placeholder="Phrase 1" oninput="updateProgress()"></td><td><input type="text" class="s2-input" placeholder="Confidence/Vocab gap" oninput="updateProgress()"></td><td><input type="text" class="s2-input" placeholder="Map pointing + 'Where is...?'" oninput="updateProgress()"></td></tr>
+                  <tr><td><input type="text" class="s2-input" placeholder="Phrase 2" oninput="updateProgress()"></td><td><input type="text" class="s2-input" placeholder="Grammar structure" oninput="updateProgress()"></td><td><input type="text" class="s2-input" placeholder="Choral drill" oninput="updateProgress()"></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <label style="margin-top: 12px;">Worked Model Exchange</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+              <textarea class="s2-input" placeholder="Student A line..." oninput="updateProgress()"></textarea>
+              <textarea class="s2-input" placeholder="Student B line..." oninput="updateProgress()"></textarea>
+            </div>
+
+            <label style="margin-top: 12px;">Brief Rationale</label>
+            <textarea id="s2_rationale" placeholder="Why this prepares them effectively without over-teaching..." oninput="updateProgress()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step3" class="panel">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Step 3: While-Speaking Activities</h2><span class="badge">35 min</span></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="btn btn-primary" id="tabA" onclick="switchActivity('A')">Activity A: Guided</button>
+            <button class="btn btn-outline" id="tabB" onclick="switchActivity('B')">Activity B: Freer</button>
+          </div>
+          
+          <div id="actA" class="act-panel">
+            <div class="form-grid">
+              <div class="form-group"><label>Activity Type</label><select id="s3a_type" onchange="updateProgress()"><option>Information gap</option><option>Survey</option><option>Ranking</option><option>Structured role play</option></select></div>
+              <div class="form-group"><label>Speaking Purpose</label><input type="text" id="s3a_purpose" placeholder="e.g., Complete missing map info" oninput="updateProgress()"></div>
+              <div class="form-group"><label>Student Instructions</label><textarea id="s3a_instr" placeholder="Clear, concise steps for learners..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group"><label>Prompts / Worksheet Items</label><textarea id="s3a_prompts" placeholder="List key prompts or gaps..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group" style="grid-column: 1/-1;"><label>Language & Interaction Support</label><textarea id="s3a_support" placeholder="Sentence starters, turn-taking cues..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group"><label>Large-Class Note</label><textarea id="s3a_large" placeholder="Timing, pair setup, monitoring strategy..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group"><label>Brief Rationale</label><textarea id="s3a_rat" placeholder="Why guided? How it builds confidence/STT..." oninput="updateProgress()"></textarea></div>
+            </div>
+          </div>
+
+          <div id="actB" class="act-panel" style="display: none;">
+            <div class="form-grid">
+              <div class="form-group"><label>Activity Type</label><select id="s3b_type" onchange="updateProgress()"><option>Role play</option><option>Group discussion</option><option>Mini-presentation</option><option>Problem solving</option></select></div>
+              <div class="form-group"><label>Speaking Purpose</label><input type="text" id="s3b_purpose" placeholder="e.g., Independent exchange in realistic context" oninput="updateProgress()"></div>
+              <div class="form-group" style="grid-column: 1/-1;"><label>Student Instructions & Task Prompt</label><textarea id="s3b_instr" placeholder="Roles, scenario, specific goals..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group" style="grid-column: 1/-1;"><label>Success Criteria (Checklist)</label><div class="checklist" id="s3b_checklist" onclick="toggleCheck(this)">
+                <li><div class="check-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div> Both students speak multiple turns</li>
+                <li><div class="check-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div> Ask/answer about 3+ topics</li>
+                <li><div class="check-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div> Use at least 3 target expressions</li>
+                <li><div class="check-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div> Include one follow-up question</li>
+              </div></div>
+              <div class="form-group"><label>Teacher Monitoring Note</label><textarea id="s3b_monitor" placeholder="What to listen for, error logging strategy..." oninput="updateProgress()"></textarea></div>
+              <div class="form-group"><label>Brief Rationale</label><textarea id="s3b_rat" placeholder="How it frees up speech while staying manageable..." oninput="updateProgress()"></textarea></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div id="step4" class="panel">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Step 4: Post-Speaking Tool & Revision</h2><span class="badge">20 min</span></div>
+          <div class="form-grid">
+            <div class="form-group"><label>Post-speaking Tool</label><select id="s4_tool" onchange="updateProgress()"><option>Exit ticket</option><option>Peer checklist</option><option>Self-reflection</option><option>Mini-rubric</option><option>Error gallery</option></select></div>
+            <div class="form-group"><label>Student Instructions</label><textarea id="s4_instr" placeholder="How to complete the reflection..." oninput="updateProgress()"></textarea></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Prompts / Items</label><textarea id="s4_prompts" placeholder="1. Today I could... 2. Useful phrase... 3. Next time..." oninput="updateProgress()"></textarea></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>One Worked Model</label><textarea id="s4_model" placeholder="Sample completed reflection..." oninput="updateProgress()"></textarea></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Revision After Classroom Use</label><textarea id="s4_rev" placeholder="What will you add/change based on likely student response?" oninput="updateProgress()"></textarea></div>
+            <div class="form-group" style="grid-column: 1/-1;"><label>Brief Rationale</label><textarea id="s4_rat" placeholder="Why this tool aids noticing & improvement..." oninput="updateProgress()"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAMPLES -->
+      <div id="examples" class="panel">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Project Examples</h2><span class="badge">Reference Only</span></div>
+          <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">Complete worked examples for each stage of the Speaking Materials Development Project, based on "Giving Directions Around School".</p>
+          
+          <div class="example-section">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 1: Context & Target</h3>
+            <div class="example-box show">
+              <strong>School level/grade:</strong> SMP Grade VIII | <strong>Proficiency:</strong> A1-A2 | <strong>Topic:</strong> Giving directions around school<br>
+              <strong>Target Component:</strong> Linguistic resources and interaction skills<br>
+              <strong>Main Challenge:</strong> Students need support with English direction phrases and confidence.<br>
+              <strong>Constraint:</strong> Large class, all pairs speak simultaneously to increase STT.<br>
+              <strong>Decision:</strong> Teacher-created maps and role cards.
+            </div>
+          </div>
+
+          <div class="example-section" style="margin-top: 16px;">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 2: Pre-Speaking Activity</h3>
+            <div class="example-box show">
+              <strong>Expressions:</strong> 1. Excuse me, where is...? 2. It is next to... 3. Go straight. 4. Turn left.<br>
+              <strong>Check Question:</strong> If the library is beside the hall, what can we say?<br>
+              <strong>Answer:</strong> It is next to the hall.<br>
+              <strong>Model:</strong> A: Excuse me, where is the library? B: It is next to the hall.
+            </div>
+          </div>
+
+          <div class="example-section" style="margin-top: 16px;">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 3A: Guided Activity</h3>
+            <div class="example-box show">
+              <strong>Type:</strong> Information gap.<br>
+              <strong>Instructions:</strong> Work with a partner. Ask and answer questions to complete missing places on your map.<br>
+              <strong>Note:</strong> All pairs speak at the same time for 4 mins. Compare answers with another pair.
+            </div>
+          </div>
+
+          <div class="example-section" style="margin-top: 16px;">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 3B: Freer Activity</h3>
+            <div class="example-box show">
+              <strong>Type:</strong> Role play (New student & Student helper).<br>
+              <strong>Prompts:</strong> Ask about 3 places. Add one follow-up question.<br>
+              <strong>Success Criteria:</strong> Speak multiple turns, ask/answer 3 places, use 3+ expressions, add 1 follow-up.
+            </div>
+          </div>
+
+          <div class="example-section" style="margin-top: 16px;">
+            <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Step 4: Post-Speaking Tool</h3>
+            <div class="example-box show">
+              <strong>Tool:</strong> Exit ticket.<br>
+              <strong>Prompts:</strong> 1. Today I could ask about... 2. One useful phrase for me was... 3. Next time I want to improve...<br>
+              <strong>Revision:</strong> Add two follow-up question frames in the next version if students avoid them.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="exportModal">
+  <div class="modal-content">
+    <div class="modal-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+    <h3 class="modal-title">Materials Draft Saved!</h3>
+    <p class="modal-text">Your speaking materials worksheet has been compiled successfully. In a real environment, this would generate a PDF/Docx for submission.</p>
+    <button class="btn btn-primary" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+  // State & Navigation
+  let currentStep = 'overview';
+  const panels = document.querySelectorAll('.panel');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function switchTab(target, el) {
+    panels.forEach(p => p.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    navItems.forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    currentStep = target;
+    window.scrollTo(0,0);
+  }
+
+  function switchActivity(act) {
+    document.getElementById('actA').style.display = act === 'A' ? 'block' : 'none';
+    document.getElementById('actB').style.display = act === 'B' ? 'block' : 'none';
+    document.getElementById('tabA').className = act === 'A' ? 'btn btn-primary' : 'btn btn-outline';
+    document.getElementById('tabB').className = act === 'B' ? 'btn btn-primary' : 'btn btn-outline';
+    updateProgress();
+  }
+
+  function toggleExample(id) {
+    const box = document.getElementById(id);
+    box.classList.toggle('show');
+  }
+
+  function toggleCheck(el) {
+    if (event.target.closest('.check-box')) {
+      const box = event.target.closest('.check-box');
+      box.classList.toggle('checked');
+      updateProgress();
+    }
+  }
+
+  // Progress Tracker
+  function updateProgress() {
+    const allInputs = document.querySelectorAll('input, select, textarea');
+    let filled = 0;
+    let total = 0;
+    
+    allInputs.forEach(inp => {
+      if (inp.id && !inp.closest('.act-panel[style*="display: none"]')) {
+        total++;
+        if (inp.value.trim() !== '') filled++;
+      }
+    });
+
+    // Adjust for checklist
+    const checked = document.querySelectorAll('.check-box.checked').length;
+    if (checked > 0) filled += (checked / 4) * 0.5; 
+    total += 0.5;
+
+    const percent = Math.round((filled / total) * 100);
+    document.getElementById('globalProgress').style.width = percent + '%';
+    document.getElementById('progressText').innerText = percent + '% Complete';
+  }
+
+  function showExportModal() {
+    document.getElementById('exportModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('exportModal').classList.remove('show');
+  }
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    updateProgress();
+  });
+</script>
+
+</body>
+</html>
